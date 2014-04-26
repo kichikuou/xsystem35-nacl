@@ -342,8 +342,10 @@ static boolean sys35_initGameDataDir(int* cnt)
         if(strcasecmp(filename,"adisk.ald")==0){
             storeDataName(DRIFILE_SCO, 0, s2);
             cnt[0] = max(1, cnt[0]);
+#if 0
         } else if (strcasecmp(filename, "system39.ain") == 0) {
 		nact->ain.path_to_ain = strdup(filename);
+#endif
 	}
         else if(strcasecmp(filename+len-4,".ald")==0){
             dno = toupper(*(filename+len-5)) - 'A';
@@ -454,8 +456,10 @@ static boolean sys35_initGameDataResorce() {
 			dno = s1[4] - 'A';
 			if (dno < 0 || dno >= DRIFILEMAX) goto errexit;
 			storeSaveName(dno, s2);
+#if 0
 		} else if (0 == strncmp(s1, "Ain", 3)) {
 			nact->ain.path_to_ain = strdup(s2);
+#endif
 		} else if (0 == strncmp(s1, "WAIA", 4)) {
 			nact->files.wai = strdup(s2);
 		} else if (0 == strncmp(s1, "BGIA", 4)) {
@@ -556,7 +560,9 @@ static void sys35_init() {
 	msg_init();
 	sel_init();
 
+#if 0
 	s39ain_init();
+#endif
 	s39ini_init();
 }
 

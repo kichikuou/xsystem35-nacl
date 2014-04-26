@@ -52,7 +52,7 @@ void font_init(int dev) {
 #endif
 	default:
 #ifdef ENABLE_SDL
-		nact->ags.font = font_gtk_new();
+          // nact->ags.font = font_gtk_new();
 		break;
 #else
 		nact->ags.font = font_x11_new();

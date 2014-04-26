@@ -23,6 +23,8 @@
 
 #include "config.h"
 
+#ifdef ENABLE_GTK
+
 #include <stdio.h>
 #include <string.h>
 #include <glib.h>
@@ -155,3 +157,10 @@ int s39ini_remove() {
 	return OK;
 	
 }
+#else
+
+int s39ini_init(void) { return 0; }
+int s39ini_remove() { return 0; }
+
+#endif
+

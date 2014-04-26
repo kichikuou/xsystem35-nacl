@@ -877,5 +877,7 @@ void ags_fillRectangleNeg(int x, int y, int w, int h, int col) {
 }
 
 void ags_autorepeat(boolean bool) {
+#if 0
 	SetAutoRepeat(bool);
+#endif
 }

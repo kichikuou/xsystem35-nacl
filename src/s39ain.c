@@ -26,7 +26,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <glib.h>
-#include <ltdl.h>
+// #include <ltdl.h>
 
 #include "portab.h"
 #include "system.h"
@@ -50,6 +50,8 @@
   system39.ain の読み込み
 */
 int s39ain_init(void) {
+  return NG;
+#if 0
 	FILE *fp;
 	long len;
 	char *buf;
@@ -212,4 +214,5 @@ int s39ain_init(void) {
 	
 	free(buf);
 	return OK;
+#endif
 }
