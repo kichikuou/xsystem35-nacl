@@ -3,9 +3,9 @@ VALID_TOOLCHAINS := glibc
 include $(NACL_SDK_ROOT)/tools/common.mk
 
 TARGET = xsystem35
-LIBS = glib-2.0 ogg vorbis vorbisfile z SDL ppapi_gles2 ppapi nacl_io SDLmain tar
+LIBS = glib-2.0 ogg vorbis vorbisfile z SDL freetype ppapi_gles2 ppapi nacl_io SDLmain tar
 
-CFLAGS = -I.. -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/include/glib-2.0 -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/lib/glib-2.0/include
+CFLAGS = -I.. -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/include/glib-2.0 -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/lib/glib-2.0/include -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/include/freetype2
 
 SRC_SYS35CMD := cmdb.c cmdc.c cmdd.c cmde.c cmdf.c cmdg.c cmdh.c cmdi.c cmdj.c cmdk.c cmdl.c cmdm.c cmdn.c cmdo.c cmdp.c cmdq.c cmds.c cmdt.c cmdu.c cmdv.c cmdw.c cmdy.c cmdz.c cmd2F.c cmd2F60.c
 SRC_CG    := pms.c vsp.c bmp.c qnt.c
@@ -22,7 +22,7 @@ SRC_AUDIO =
 SRC_CDROM = cdrom.empty.c
 SRC_MIDI = 
 SRC_GRAPHDEV = sdl_video.c sdl_mode.c sdl_draw.c sdl_event.c sdl_image.c sdl_cursor.c
-SRC_FONT = 
+SRC_FONT = font_freetype2.c cp932tojis0213.c
 SRC_ABLEND = 
 #SRC_MENU := menu.c menu_callback.c menu_gui.c
 SRC_MENU := menu_null.c

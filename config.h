@@ -19,7 +19,7 @@
 #define CDROM_DEVICE "/dev/cdrom"
 
 /* Define this if you want to Debug */
-#undef DEBUG
+#define DEBUG 1
 
 /* default audio mode */
 #undef DEFAULT_AUDIO_MODE
@@ -49,7 +49,7 @@
 #undef ENABLE_ESD
 
 /* Define this if you have freetype2 installed */
-#undef ENABLE_FT2
+#define ENABLE_FT2 1
 
 /* Define this if you have glib >= 1.2.0 */
 #undef ENABLE_GLIB

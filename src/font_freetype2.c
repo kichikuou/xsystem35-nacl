@@ -27,7 +27,7 @@
 #include <string.h>
 #include <glib.h>
 
-#include <ft2build.h>
+#include <freetype2/ft2build.h>
 #include FT_FREETYPE_H
 //#include <freetype/freetype.h>
 
@@ -204,6 +204,7 @@ static void pixmapmono2comimg(BYTE *src, int x, int y, int w, int h, int src_bpl
 	int w1,w2;
 	BYTE *dst = GETOFFSET_PIXEL(&img_glyph, x, y);
 	unsigned int ch;
+        if (w <= 0) return;
 	
 	w1 = w / 8;
 	w2 = w % 8;
