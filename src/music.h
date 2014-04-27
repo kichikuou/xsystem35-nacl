@@ -25,6 +25,7 @@
 #define __MUSIC_H__
 
 #include <glib.h>
+#include <pthread.h>
 
 /* music command */
 enum {
@@ -74,6 +75,7 @@ enum {
 };
 
 /* socket file */
+#if 0
 #define XSYS35MUSSOCK "/xsystem35_sock"
 
 #define XSYS35_PROTOCOL_VERSION 1
@@ -94,6 +96,22 @@ typedef struct {
 	gpointer data;
 	gint fd;
 } PacketNode;
+#endif
+
+enum { MUSIC_IDLE, MUSIC_TX, MUSIC_RX };
+
+typedef struct {
+  pthread_mutex_t lock;
+  pthread_cond_t cond;
+  guint16 status;
+  guint16 command;
+  guint32 client_data_length;
+  gpointer client_data;
+  guint32 server_data_length;
+  gpointer server_data;
+} MusicMessage;
+
+extern MusicMessage music_msg;
 
 typedef struct {
 	boolean cdrom;
