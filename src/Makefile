@@ -28,6 +28,7 @@ SRC_ABLEND =
 SRC_MENU := menu_null.c
 
 SOURCES = modulemain.cc \
+	naclmsg.cc \
 	xsystem35.c \
 	dri.c \
 	ald_manager.c \

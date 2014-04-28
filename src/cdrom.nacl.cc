@@ -1,10 +1,11 @@
+#include <stdio.h>
+
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/var_dictionary.h>
 
+#include "naclmsg.h"
 #include "portab.h"
 #include "cdrom.h"
-
-pp::Instance* getXSystem35Instance();
 
 static int  cdrom_init(char *);
 static int  cdrom_exit();
@@ -33,29 +34,44 @@ int cdrom_exit() {
 }
 
 int cdrom_start(int trk) {
-  pp::Instance* instance = getXSystem35Instance();
-  if (!instance)
+  if (!g_naclMsg)
     return NG;
 
   pp::VarDictionary msg;
   msg.Set("command", "cd_play");
   msg.Set("track", trk);
-  instance->PostMessage(msg);
+  g_naclMsg->PostMessage(msg);
   return OK;
 }
 
 int cdrom_stop() {
-  pp::Instance* instance = getXSystem35Instance();
-  if (!instance)
+  if (!g_naclMsg)
     return NG;
 
   pp::VarDictionary msg;
   msg.Set("command", "cd_stop");
-  instance->PostMessage(msg);
+  g_naclMsg->PostMessage(msg);
   return OK;
 }
 
-int cdrom_getPlayingInfo (cd_time *info) {
+int cdrom_getPlayingInfo(cd_time *info) {
   info->t = info->m = info->s = info->f = 999;
-  return NG;
+
+  if (!g_naclMsg)
+    return NG;
+
+  pp::VarDictionary msg;
+  msg.Set("command", "cd_getposition");
+
+  pp::Var result = g_naclMsg->SendMessage(msg);
+  assert(result.is_int());
+  int t = result.AsInt();
+
+  info->t = t & 0xff;
+  FRAMES_TO_MSF(t >> 8, &info->m, &info->s, &info->f);
+
+  fprintf(stderr, "cdrom_getPlayingInfo: %d %d %d %d\n",
+          info->t, info->m, info->s, info->f);
+
+  return OK;
 }

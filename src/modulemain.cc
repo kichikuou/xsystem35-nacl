@@ -11,6 +11,8 @@
 #include <ppapi/cpp/module.h>
 #include <ppapi/cpp/var.h>
 
+#include "naclmsg.h"
+
 static void* sdl_thread_start(void* arg) {
   char* argv[2];
   int rtn;
@@ -62,7 +64,7 @@ public:
 
     pthread_create(&sdl_thread_, NULL, sdl_thread_start, NULL);
     sdl_initialized_ = true;
-    g_instance_ = this;
+    g_naclMsg = new NaclMsg(this);
   }
 
   virtual bool HandleInputEvent(const pp::InputEvent& event) {
@@ -70,20 +72,14 @@ public:
     return true;
   }
 
-  virtual void HandleMessage(const pp::Var& var_message) {
+  virtual void HandleMessage(const pp::Var& message) {
+    g_naclMsg->HandleMessage(message);
   }
 
-  static XSystem35Instance* getInstance() {
-    return g_instance_;
-  }
 private:
-  static XSystem35Instance* g_instance_;
-
   pthread_t sdl_thread_;
   bool sdl_initialized_;
 };
-
-XSystem35Instance* XSystem35Instance::g_instance_ = NULL;
 
 class XSystem35Module : public pp::Module {
 public:
@@ -94,10 +90,6 @@ public:
     return new XSystem35Instance(instance);
   }
 };
-
-pp::Instance* getXSystem35Instance() {
-  return XSystem35Instance::getInstance();
-}
 
 namespace pp {
 
