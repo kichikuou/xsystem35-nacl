@@ -43,6 +43,8 @@ public:
       fprintf(stderr, "mount failed: %s\n", strerror(errno));
     if (mount("Koruri-20140319", "fonts", "httpfs", 0, "") != 0)
       fprintf(stderr, "mount failed: %s\n", strerror(errno));
+    if (mount("", "save", "html5fs", 0, "type=TEMPORARY,expected_size=1048576") != 0)
+      fprintf(stderr, "save mount failed: %s\n", strerror(errno));
 
     return true;
   }
