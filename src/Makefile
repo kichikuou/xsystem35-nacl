@@ -3,7 +3,7 @@ VALID_TOOLCHAINS := glibc
 include $(NACL_SDK_ROOT)/tools/common.mk
 
 TARGET = xsystem35
-LIBS = glib-2.0 ogg vorbis vorbisfile z SDL freetype ppapi_gles2 ppapi nacl_io SDLmain tar
+LIBS = glib-2.0 ogg vorbis vorbisfile z SDL freetype ppapi_gles2 ppapi_cpp ppapi nacl_io
 
 CFLAGS = -I.. -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/include/glib-2.0 -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/lib/glib-2.0/include -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/include/freetype2
 
@@ -27,7 +27,7 @@ SRC_ABLEND =
 #SRC_MENU := menu.c menu_callback.c menu_gui.c
 SRC_MENU := menu_null.c
 
-SOURCES = \
+SOURCES = modulemain.cc \
 	xsystem35.c \
 	dri.c \
 	ald_manager.c \
