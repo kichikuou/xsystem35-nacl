@@ -44,6 +44,10 @@ extern cdromdevice_t cdrom_bsd;
 extern cdromdevice_t cdrom_irix;
 #define DEV_PLAY_MODE &cdrom_irix
 
+#elif defined(ENABLE_CDROM_NACL)
+extern cdromdevice_t cdrom_nacl;
+#define DEV_PLAY_MODE &cdrom_nacl
+
 #else
 
 extern cdromdevice_t cdrom_empty;
@@ -77,6 +81,10 @@ int cd_init(cdromdevice_t *cd) {
 	struct stat st;
 	int ret = NG;
 	
+#ifdef ENABLE_CDROM_NACL
+        memcpy(cd, DEV_PLAY_MODE, sizeof(cdromdevice_t));
+        ret = cd->init(dev);
+#else
 	if (dev == NULL) return -1;
 	
 	stat(dev, &st);
@@ -98,6 +106,7 @@ int cd_init(cdromdevice_t *cd) {
 		WARNING("no cdrom device available\n");
 		ret = NG;
 	}
+#endif
 	return ret;
 }
 

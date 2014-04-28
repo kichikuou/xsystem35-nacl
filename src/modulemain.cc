@@ -62,6 +62,7 @@ public:
 
     pthread_create(&sdl_thread_, NULL, sdl_thread_start, NULL);
     sdl_initialized_ = true;
+    g_instance_ = this;
   }
 
   virtual bool HandleInputEvent(const pp::InputEvent& event) {
@@ -71,10 +72,18 @@ public:
 
   virtual void HandleMessage(const pp::Var& var_message) {
   }
+
+  static XSystem35Instance* getInstance() {
+    return g_instance_;
+  }
 private:
+  static XSystem35Instance* g_instance_;
+
   pthread_t sdl_thread_;
   bool sdl_initialized_;
 };
+
+XSystem35Instance* XSystem35Instance::g_instance_ = NULL;
 
 class XSystem35Module : public pp::Module {
 public:
@@ -85,6 +94,10 @@ public:
     return new XSystem35Instance(instance);
   }
 };
+
+pp::Instance* getXSystem35Instance() {
+  return XSystem35Instance::getInstance();
+}
 
 namespace pp {
 

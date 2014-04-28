@@ -19,7 +19,7 @@ SRC_DLL :=
 SRC_IMAGE = image.c # image15.c image16.c image24.c image24p.c
 
 SRC_AUDIO = 
-SRC_CDROM = cdrom.empty.c
+SRC_CDROM = cdrom.nacl.cc
 SRC_MIDI = 
 SRC_GRAPHDEV = sdl_video.c sdl_mode.c sdl_draw.c sdl_event.c sdl_image.c sdl_cursor.c
 SRC_FONT = font_freetype2.c cp932tojis0213.c
