@@ -76,6 +76,10 @@ extern int esd_init(audiodevice_t *, char *);
 extern int sunaudio_init(audiodevice_t *dev, char *devaudio, char *devaudioctl);
 #endif /* ENABLE_SUNAUDIO */
 
+#ifdef ENABLE_NACL
+extern int nacl_audio_init(audiodevice_t* dev);
+#endif /* ENABLE_NACL */
+
 int audio_init(audiodevice_t *a) {
 	switch(mode) {
 	case AUDIO_PCM_ANY:
@@ -119,6 +123,11 @@ int audio_init(audiodevice_t *a) {
 #ifdef ENABLE_ESD
 	case AUDIO_PCM_ESD:
 		if (esd_init(a, NULL) == 0) break;
+		if (mode_onlyone) break;
+#endif
+#ifdef ENABLE_NACL
+        case AUDIO_PCM_NACL:
+		if (nacl_audio_init(a) == 0) break;
 		if (mode_onlyone) break;
 #endif
 #ifdef ENABLE_SDL

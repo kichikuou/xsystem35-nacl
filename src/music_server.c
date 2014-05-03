@@ -49,7 +49,7 @@ static pthread_t g_musserv_thread;
 static int get_command() {
 	int v[10];
 
-#if 0
+#ifndef ENABLE_NACL
 	if (prv.audiodev.fd != -1) {
 		prv.ufds[1].fd = prv.audiodev.fd;
 		prv.ufds[1].events = POLLOUT;
@@ -98,11 +98,17 @@ static int get_command() {
 	pkt->fd = fd;
 #else
         pthread_mutex_lock(&music_msg.lock);
-        while (music_msg.status != MUSIC_TX)
+        while (music_msg.status != MUSIC_TX && !muspcm_writable())
           pthread_cond_wait(&music_msg.cond, &music_msg.lock);
         pthread_mutex_unlock(&music_msg.lock);
 #endif
-	
+
+        if (muspcm_writable())
+          muspcm_write2dev();
+
+        if (music_msg.status != MUSIC_TX)
+          return 0;
+
 	fprintf(stderr, "get command %d, len = %d\n", music_msg.command, music_msg.client_data_length);
 	switch(music_msg.command) {
 	case MUS_CDROM_START:
@@ -418,6 +424,7 @@ int musserv_init() {
         music_msg.status = MUSIC_IDLE;
         music_msg.client_data = NULL;
         music_msg.server_data = NULL;
+        prv.audiodev.pcm_cond = &music_msg.cond;
 
         pthread_create(&g_musserv_thread, NULL, music_thread_start, NULL);
 	

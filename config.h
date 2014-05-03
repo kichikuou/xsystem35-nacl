@@ -45,8 +45,8 @@
 /* Define this if you use external player for cdrom audio */
 #undef ENABLE_CDROM_MP3
 
-/* Define this if you use NaCl for cdrom audio */
-#define ENABLE_CDROM_NACL 1
+/* Define this if you use NaCl */
+#define ENABLE_NACL 1
 
 /* Define this if you have ESD (libesd) installed */
 #undef ENABLE_ESD

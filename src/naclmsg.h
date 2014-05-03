@@ -14,6 +14,8 @@ class NaclMsg {
   NaclMsg(pp::Instance* instance);
   ~NaclMsg();
 
+  pp::Instance* instance() const { return instance_; }
+
   void PostMessage(const pp::Var&);
   pp::Var SendMessage(pp::VarDictionary&);
 

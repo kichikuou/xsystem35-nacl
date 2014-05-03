@@ -112,6 +112,7 @@ extern int muspcm_getpos(int slot);
 extern int muspcm_setvol(int dev, int slot, int lv);
 extern int muspcm_getwavelen(int slot);
 extern int muspcm_cb();
+extern boolean muspcm_writable(void);
 extern int muspcm_write2dev(void);
 extern boolean muspcm_isplaying(int slot);
 extern int sndcnv_prepare(pcmobj_t *pcm, int outlen);

@@ -437,6 +437,10 @@ int muspcm_cb() {
 	return len; // 実際に合成した長さ
 }
 
+boolean muspcm_writable(void) {
+  return prv.audiodev.writable(&prv.audiodev);
+}
+
 // バッファ中のPCMデータをデバイスに出力 (pollout時に呼ばれる)
 int muspcm_write2dev(void) {
 	audiodevbuf_t *buf = &prv.audiodev.buf;
@@ -454,7 +458,10 @@ int muspcm_write2dev(void) {
 		if (len == 0) {
 			// 実際に読み込めたデータが０の場合
 			sw = buf->sw;
-			if (buf->cur == buf->b[sw]) return OK;
+			if (buf->cur == buf->b[sw]) {
+                          prv.audiodev.write(&prv.audiodev, NULL, 0); // tell the end
+                          return OK;
+                        }
 			// 残りのデータの吐き出しとバッファのクリア
 			//   audiodeviceのバッファサイズ全体を送出しないと
 			//   FreeBSD+OSSでデバイスがwrite readyにならない。

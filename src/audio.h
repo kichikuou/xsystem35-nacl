@@ -25,6 +25,7 @@
 #define __AUDIO_H__
 
 #include "portab.h"
+#include <pthread.h>
 
 #define MIX_NRDEVICES 4
 #define MIX_MASTER 0
@@ -67,6 +68,8 @@ struct _audiodevice {
 	audiodevbuf_t buf;
 	
 	boolean opened;
+
+        pthread_cond_t *pcm_cond;
 	
 	int  (*open)(struct _audiodevice *dev, chanfmt_t fmt);
 	int  (*close)(struct _audiodevice *dev);
@@ -74,6 +77,7 @@ struct _audiodevice {
 	void (*mix_set)(struct _audiodevice *dev, int ch, int val);
 	int  (*mix_get)(struct _audiodevice *dev, int ch);
 	int  (*exit)(struct _audiodevice *dev);
+        boolean (*writable)(struct _audiodevice *dev);
 };
 typedef struct _audiodevice audiodevice_t;
 
@@ -86,6 +90,7 @@ enum {
 	AUDIO_PCM_SDL,
 	AUDIO_PCM_ARTS,
 	AUDIO_PCM_SUN,
+        AUDIO_PCM_NACL,
 	AUDIO_PCM_ANY,
 	AUDIO_PCM_DMY
 };

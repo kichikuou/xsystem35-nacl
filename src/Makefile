@@ -18,7 +18,7 @@ SRC_DLL :=
 
 SRC_IMAGE = image.c # image15.c image16.c image24.c image24p.c
 
-SRC_AUDIO = 
+SRC_AUDIO = audio_nacl.cc
 SRC_CDROM = cdrom.nacl.cc
 SRC_MIDI = 
 SRC_GRAPHDEV = sdl_video.c sdl_mode.c sdl_draw.c sdl_event.c sdl_image.c sdl_cursor.c

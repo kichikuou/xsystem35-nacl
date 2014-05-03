@@ -44,7 +44,7 @@ extern cdromdevice_t cdrom_bsd;
 extern cdromdevice_t cdrom_irix;
 #define DEV_PLAY_MODE &cdrom_irix
 
-#elif defined(ENABLE_CDROM_NACL)
+#elif defined(ENABLE_NACL)
 extern cdromdevice_t cdrom_nacl;
 #define DEV_PLAY_MODE &cdrom_nacl
 
@@ -81,7 +81,7 @@ int cd_init(cdromdevice_t *cd) {
 	struct stat st;
 	int ret = NG;
 	
-#ifdef ENABLE_CDROM_NACL
+#ifdef ENABLE_NACL
         memcpy(cd, DEV_PLAY_MODE, sizeof(cdromdevice_t));
         ret = cd->init(dev);
 #else
