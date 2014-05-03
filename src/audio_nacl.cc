@@ -41,10 +41,9 @@ int NaclAudio::open(audiodevice_t* audio, chanfmt_t fmt) {
     close(audio);
 
   pp::Instance* instance = g_naclMsg->instance();
-  PP_AudioSampleRate sample_rate = pp::AudioConfig::RecommendSampleRate(instance);
 
-  if (!(sample_rate == PP_AUDIOSAMPLERATE_44100 && fmt.rate == 44100) ||
-      (sample_rate == PP_AUDIOSAMPLERATE_48000 && fmt.rate == 48000))
+  PP_AudioSampleRate sample_rate = pp::AudioConfig::RecommendSampleRate(instance);
+  if (sample_rate != fmt.rate)
     return NG;
 
   sample_frame_count_ = pp::AudioConfig::RecommendSampleFrameCount(instance, sample_rate, 4096);
