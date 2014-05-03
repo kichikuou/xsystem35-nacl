@@ -3,14 +3,14 @@ VALID_TOOLCHAINS := glibc
 include $(NACL_SDK_ROOT)/tools/common.mk
 
 TARGET = xsystem35
-LIBS = glib-2.0 ogg vorbis vorbisfile z SDL freetype ppapi_gles2 ppapi_cpp ppapi nacl_io
+LIBS = ogg vorbis vorbisfile z SDL freetype ppapi_gles2 ppapi_cpp ppapi nacl_io
 
-CFLAGS = -I.. -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/include/glib-2.0 -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/lib/glib-2.0/include -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/include/freetype2
+CFLAGS = -I.. -I. -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/include/freetype2
 
 SRC_SYS35CMD := cmdb.c cmdc.c cmdd.c cmde.c cmdf.c cmdg.c cmdh.c cmdi.c cmdj.c cmdk.c cmdl.c cmdm.c cmdn.c cmdo.c cmdp.c cmdq.c cmds.c cmdt.c cmdu.c cmdv.c cmdw.c cmdy.c cmdz.c cmd2F.c cmd2F60.c
 SRC_CG    := pms.c vsp.c bmp.c qnt.c
 SRC_MUS   := music.c music_client.c music_server.c music_cdrom.c music_midi.c music_pcm.c music_fader.c wavfile.c wavmix.c audio.c midi.c cdrom.c sndcnv.c musstream.c pcmlib.c music_bgm.c musstream_wav.c musstream_ogg.c musstream_wav_ima.c
-SRC_MISC  := LittleEndian.c counter.c imput.c profile.c mt19937-1.c joystick_dmy.c eucsjis.c filecheck.c # tempname.c
+SRC_MISC  := LittleEndian.c counter.c imput.c profile.c mt19937-1.c joystick_dmy.c eucsjis.c filecheck.c glib.c # tempname.c
 SRC_SCO   := cali.c scenario.c variable.c cmd_check.c hankana2sjis.c nact.c selection.c message.c savedata.c hankaku.c s39ain.c s39init.c
 SRC_GRAPH := ags.c font.c flood.c cg.c ecopy.c antialiase.c alpha_plane.c cursor.c
 SRC_NET := network.c
