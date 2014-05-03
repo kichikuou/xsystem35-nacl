@@ -9,7 +9,7 @@
 
 static int  cdrom_init(char *);
 static int  cdrom_exit();
-static int  cdrom_start(int);
+static int  cdrom_start(int, int);
 static int  cdrom_stop();
 static int  cdrom_getPlayingInfo(cd_time *);
 
@@ -34,13 +34,14 @@ int cdrom_exit() {
   return OK;
 }
 
-int cdrom_start(int trk) {
+int cdrom_start(int trk, int loop) {
   if (!g_naclMsg)
     return NG;
 
   pp::VarDictionary msg;
   msg.Set("command", "cd_play");
   msg.Set("track", trk);
+  msg.Set("loop", loop);
   g_naclMsg->PostMessage(msg);
   return OK;
 }
@@ -67,6 +68,8 @@ int cdrom_getPlayingInfo(cd_time *info) {
   pp::Var result = g_naclMsg->SendMessage(msg);
   assert(result.is_int());
   int t = result.AsInt();
+  if (!t)
+    return NG;
 
   info->t = t & 0xff;
   FRAMES_TO_MSF(t >> 8, &info->m, &info->s, &info->f);

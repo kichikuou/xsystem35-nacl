@@ -92,20 +92,16 @@ int muscd_cb() {
 	switch(obj->st) {
 	case CDROM_START:
 		obj->in_play = TRUE;
-		obj->dev->start(obj->track);
+		obj->dev->start(obj->track, obj->loop ? 0 : 1);
 		obj->st = CDROM_STOPCHECK;
 		break;
 	case CDROM_STOPCHECK:
-		if (NG == obj->dev->getpos(&(obj->time))) {
+		if (obj->loop && NG == obj->dev->getpos(&(obj->time))) {
                         obj->st = CDROM_LOOPCHECK;
                 }
 		break;
 	case CDROM_LOOPCHECK:
 		obj->cnt++;
-		if (obj->loop == 0) {
-			obj->st = CDROM_START;
-			break;
-		}
 		if (--obj->loop == 0) {
 			obj->st = CDROM_STOP;
 		} else {

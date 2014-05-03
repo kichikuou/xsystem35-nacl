@@ -1,6 +1,5 @@
 
 var audioElements, playingTrack;
-var stoppedPosition = { 'track': 1, 'time': 0 };
 
 function createAudioElements(from, to) {
   if (audioElements)
@@ -15,7 +14,7 @@ function createAudioElements(from, to) {
   }
 }
 
-function cd_play(track) {
+function cd_play(track, loop) {
   createAudioElements(2, 29);
   if (audioElements[track]) {
     cd_stop();
@@ -23,6 +22,7 @@ function cd_play(track) {
       audioElements[track].load();
     else
       audioElements[track].currentTime = 0;
+    audioElements[track].loop = (loop != 0);
     audioElements[track].play();
     playingTrack = track;
   }
@@ -31,14 +31,13 @@ function cd_play(track) {
 function cd_stop() {
   if (playingTrack && audioElements[playingTrack]) {
     audioElements[playingTrack].pause();
-    stoppedPosition = cd_getposition();
     playingTrack = null;
   }
 }
 
 function cd_getposition() {
-  if (!playingTrack || !audioElements[playingTrack])
-    return stoppedPosition;
+  if (!playingTrack || !audioElements[playingTrack] || audioElements[playingTrack].ended)
+    return 0;
 
   time = Math.round(audioElements[playingTrack].currentTime * 75);
   return playingTrack | time << 8;
@@ -63,7 +62,7 @@ function moduleDidLoad() {
 function handleMessage(message) {
   var data = message.data;
   if (data.command == 'cd_play') {
-    cd_play(data.track);
+    cd_play(data.track, data.loop);
   } else if (data.command == 'cd_stop') {
     cd_stop();
   } else if (data.command == 'cd_getposition') {
