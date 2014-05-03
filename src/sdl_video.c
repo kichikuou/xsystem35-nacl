@@ -40,8 +40,6 @@ static void makeDIB(int width, int height, int depth);
 
 struct sdl_private_data *sdl_videodev;
 
-boolean RawKeyInfo[256];
-
 
 /* SDL の初期化 */
 int sdl_Initilize(void) {

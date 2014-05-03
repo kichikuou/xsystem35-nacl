@@ -22,11 +22,11 @@
 /* $Id: music_server.c,v 1.13 2004/10/31 04:18:06 chikama Exp $ */
 
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/poll.h>
-#include <sys/un.h>
 #include <sys/wait.h>
 #include <glib.h>
 #include <pthread.h>
@@ -416,6 +416,7 @@ static void* music_thread_start(void* arg) {
 	musbgm_init();
 	
 	do_music_server();
+        return NULL;
 }
 
 int musserv_init() {

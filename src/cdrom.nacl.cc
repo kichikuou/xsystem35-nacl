@@ -31,6 +31,7 @@ int cdrom_init(char *dev_cd) {
 
 int cdrom_exit() {
   cdrom_stop();
+  return OK;
 }
 
 int cdrom_start(int trk) {

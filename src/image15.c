@@ -36,7 +36,7 @@ static void drawImage16_fromData15(agsurface_t *dib, cgdata *cg, int dx, int dy,
 		for (x = 0; x < w; x++) {
 			pic16 = *pic_src;
 			*yl = PIX15(RGB_PIXR16(pic16), RGB_PIXG16(pic16), RGB_PIXB16(pic16));
-			(WORD *)yl ++; pic_src++;
+			yl ++; pic_src++;
 		}
 		pic_src += (cg->width - w);
 	}

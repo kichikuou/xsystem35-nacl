@@ -4,6 +4,9 @@ extern "C" {
 #include "audio.h"
 #include "portab.h"
 }
+#undef min
+#undef max
+
 #include "naclmsg.h"
 
 #include <assert.h>

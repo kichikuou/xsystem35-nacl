@@ -97,7 +97,7 @@ extern int  sdl_getjoyinfo(void);
 
 /* misc */
 extern void sdl_mainIteration();
-extern boolean RawKeyInfo[];
+extern boolean RawKeyInfo[256];
 
 /* 初期化関係 */
 #define GraphicsInitilize() sdl_Initilize()
@@ -111,6 +111,7 @@ extern boolean RawKeyInfo[];
 #define GetDIB() sdl_getDIB()
 
 /* 画面更新 */
+void sdl_sync(void);
 #define DspDeviceSync() sdl_sync()
 #define UpdateArea(src,dst) sdl_updateArea((src),(dst))
 #define FullScreen(on) sdl_FullScreen(on)

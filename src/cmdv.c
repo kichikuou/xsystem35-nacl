@@ -1049,6 +1049,7 @@ static void va_init_itimer() {
 }
 
 static void va_pause_itimer() {
+#if 0 // FIXME
 	struct itimerval value;
 
 	value.it_interval.tv_sec  = 0;
@@ -1056,9 +1057,11 @@ static void va_pause_itimer() {
 	value.it_value.tv_sec  = 0;
 	value.it_value.tv_usec = 0;
 	setitimer(ITIMER_REAL, &value, NULL);
+#endif
 }
 
 static void va_unpause_itimer() {
+#if 0 // FIXME
 	struct itimerval value;
 	
 	value.it_interval.tv_sec  = 0;
@@ -1067,4 +1070,5 @@ static void va_unpause_itimer() {
 	value.it_value.tv_usec = 10 * 1000;
 	setitimer(ITIMER_REAL, &value, NULL);
 	nact->is_va_animation = TRUE;
+#endif
 }

@@ -1,11 +1,11 @@
-VALID_TOOLCHAINS := glibc
+VALID_TOOLCHAINS := pnacl
 
 include $(NACL_SDK_ROOT)/tools/common.mk
 
 TARGET = xsystem35
-LIBS = ogg vorbis vorbisfile z SDL freetype ppapi_gles2 ppapi_cpp ppapi nacl_io
+LIBS = vorbisfile vorbis ogg z SDL freetype bz2 ppapi_gles2 ppapi_cpp ppapi nacl_io
 
-CFLAGS = -I.. -I. -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/include/freetype2
+CFLAGS = -I.. -I. -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/include/freetype2 -Wno-pointer-sign -Wno-invalid-source-encoding
 
 SRC_SYS35CMD := cmdb.c cmdc.c cmdd.c cmde.c cmdf.c cmdg.c cmdh.c cmdi.c cmdj.c cmdk.c cmdl.c cmdm.c cmdn.c cmdo.c cmdp.c cmdq.c cmds.c cmdt.c cmdu.c cmdv.c cmdw.c cmdy.c cmdz.c cmd2F.c cmd2F60.c
 SRC_CG    := pms.c vsp.c bmp.c qnt.c
@@ -16,7 +16,7 @@ SRC_GRAPH := ags.c font.c flood.c cg.c ecopy.c antialiase.c alpha_plane.c cursor
 SRC_NET := network.c
 SRC_DLL := 
 
-SRC_IMAGE = image.c # image15.c image16.c image24.c image24p.c
+SRC_IMAGE = image.c
 
 SRC_AUDIO = audio_nacl.cc
 SRC_CDROM = cdrom.nacl.cc
