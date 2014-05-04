@@ -781,7 +781,7 @@ static int saveGameData(int no, char *buf, int size) {
         if (fp == NULL) {
                 return SAVE_SAVEERR;
         }
-        if (size != fwrite(buf, size, 1, fp)) {
+        if (1 != fwrite(buf, size, 1, fp)) {
                 status = SAVE_SAVEERR;
         }
         fclose(fp);
