@@ -438,7 +438,11 @@ int muspcm_cb() {
 }
 
 boolean muspcm_writable(void) {
-  return prv.audiodev.writable(&prv.audiodev);
+  return prv.audiodev.writable(&prv.audiodev) &&
+    (prv.audiodev.buf.ready[0] ||
+     prv.audiodev.buf.ready[1] ||
+     prv.pcmplist ||
+     prv.audiodev.playing(&prv.audiodev));
 }
 
 // バッファ中のPCMデータをデバイスに出力 (pollout時に呼ばれる)

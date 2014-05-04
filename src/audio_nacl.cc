@@ -22,14 +22,18 @@ public:
   int open(audiodevice_t* audio, chanfmt_t fmt);
   int close(audiodevice_t* audio);
   int write(audiodevice_t* audio, unsigned char* buf, int cnt);
-  bool writable() { return !full_; }
+  bool writable() const { return !full_; }
+  bool playing() const { return playing_; }
   void callback(void* samples, uint32_t buffer_size);
+
 private:
   uint32_t sample_frame_count_;
   pp::Audio* ppaudio_;
   void* buf_;
   pthread_cond_t *cond_;
   bool full_;
+  bool playing_;
+  int zero_count_;
 };
 
 void AudioCallback(void* samples, uint32_t buffer_size, void* data) {
@@ -57,13 +61,14 @@ int NaclAudio::open(audiodevice_t* audio, chanfmt_t fmt) {
   audio->buf.len = sample_frame_count_ * 4;  // 16 bits, stereo
   buf_ = malloc(audio->buf.len);
   full_ = false;
+  playing_ = false;
+  zero_count_ = 0;
   cond_ = audio->pcm_cond;
   return OK;
 }
 
 int NaclAudio::close(audiodevice_t* audio) {
   if (ppaudio_) {
-    // FIXME: Wait for finish?
     delete ppaudio_;
     ppaudio_ = NULL;
     free(buf_);
@@ -75,14 +80,27 @@ int NaclAudio::write(audiodevice_t* audio, unsigned char* buf, int cnt) {
   if (!ppaudio_ || full_)
     return NG;
 
-  if (!cnt)
-    memset(buf_, 0, audio->buf.len);
-  else {
+  if (!cnt) {
+    if (!playing_)
+      return OK;
+
+    if (++zero_count_ == 3) {
+      ppaudio_->StopPlayback();
+      playing_ = false;
+    } else {
+      memset(buf_, 0, audio->buf.len);
+      full_ = true;
+    }
+  } else {
+    zero_count_ = 0;
     assert(cnt == audio->buf.len);
     memcpy(buf_, buf, cnt);
+    full_ = true;
+    if (!playing_) {
+      ppaudio_->StartPlayback();
+      playing_ = true;
+    }
   }
-  full_ = true;
-  ppaudio_->StartPlayback();
 
   return OK;
 }
@@ -110,6 +128,10 @@ boolean audio_writable(audiodevice_t* audio) {
   return static_cast<NaclAudio*>(audio->data_pcm)->writable() ? TRUE : FALSE;
 }
 
+boolean audio_playing(audiodevice_t* audio) {
+  return static_cast<NaclAudio*>(audio->data_pcm)->playing() ? TRUE : FALSE;
+}
+
 int nacl_audio_exit(audiodevice_t* dev) {
   if (dev == NULL) return OK;
 	
@@ -134,6 +156,7 @@ int nacl_audio_init(audiodevice_t* dev) {
   dev->close = audio_close;
   dev->write = audio_write;
   dev->writable = audio_writable;
+  dev->playing = audio_playing;
   dev->mix_set = NULL;
   dev->mix_get = NULL;
   dev->exit    = nacl_audio_exit;

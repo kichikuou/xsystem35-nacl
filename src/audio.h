@@ -78,6 +78,7 @@ struct _audiodevice {
 	int  (*mix_get)(struct _audiodevice *dev, int ch);
 	int  (*exit)(struct _audiodevice *dev);
         boolean (*writable)(struct _audiodevice *dev);
+        boolean (*playing)(struct _audiodevice *dev);
 };
 typedef struct _audiodevice audiodevice_t;
 
