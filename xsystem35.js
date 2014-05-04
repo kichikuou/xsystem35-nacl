@@ -1,3 +1,8 @@
+function setWindowSize(width, height) {
+  var module = document.getElementById('nacl_module');
+  module.setAttribute('width', width);
+  module.setAttribute('height', height);
+}
 
 var audioElements, playingTrack;
 
@@ -61,7 +66,9 @@ function moduleDidLoad() {
 // NaCl module.
 function handleMessage(message) {
   var data = message.data;
-  if (data.command == 'cd_play') {
+  if (data.command == 'set_window_size') {
+    setWindowSize(data.width, data.height);
+  } else if (data.command == 'cd_play') {
     cd_play(data.track, data.loop);
   } else if (data.command == 'cd_stop') {
     cd_stop();

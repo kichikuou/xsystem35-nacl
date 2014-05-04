@@ -58,3 +58,14 @@ void NaclMsg::HandleMessage(const pp::Var& msg) {
   pthread_mutex_unlock(&lock_);
   pthread_cond_signal(&cond_);
 }
+
+void naclmsg_setWindowSize(int width, int height) {
+  if (!g_naclMsg)
+    return;
+  pp::VarDictionary msg;
+  msg.Set("command", "set_window_size");
+  msg.Set("width", width);
+  msg.Set("height", height);
+  g_naclMsg->PostMessage(msg);
+}
+

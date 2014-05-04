@@ -29,6 +29,7 @@
 #include "portab.h"
 #include "system.h"
 #include "sdl_private.h"
+#include "naclmsg.h"
 
 
 static SDL_Rect **modes;
@@ -128,4 +129,5 @@ void sdl_setWindowSize(int x, int y, int w, int h) {
 	
 	sdl_display = SDL_SetVideoMode(w, h, sdl_vinfo->vfmt->BitsPerPixel, mode);
 	ms_active = (SDL_GetAppState() & SDL_APPMOUSEFOCUS) ? TRUE : FALSE;
+	naclmsg_setWindowSize(w, h);
 }

@@ -1,6 +1,8 @@
 #ifndef __NACLMSG_H_
 #define __NACLMSG_H_
 
+#ifdef __cplusplus
+
 #include <pthread.h>
 #include <ppapi/cpp/var.h>
 
@@ -31,5 +33,14 @@ class NaclMsg {
 };
 
 extern NaclMsg* g_naclMsg;
+
+extern "C" {
+#endif // __cplusplus
+
+void naclmsg_setWindowSize(int width, int height);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // __NACLMSG_H_
