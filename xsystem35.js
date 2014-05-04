@@ -4,48 +4,36 @@ function setWindowSize(width, height) {
   module.setAttribute('height', height);
 }
 
-var audioElements, playingTrack;
-
-function createAudioElements(from, to) {
-  if (audioElements)
-    return;
-  audioElements = [];
-  for (var i = from; i <= to; i++) {
-    var el = document.createElement('audio');
-    el.setAttribute('src', 'game/kichiku/' + ('0' + i).substr(-2) + '.ogg');
-    el.setAttribute('preload', 'none');
-    document.body.appendChild(el);
-    audioElements[i] = el;
-  }
-}
+var audioElement;
 
 function cd_play(track, loop) {
-  createAudioElements(2, 29);
-  if (audioElements[track]) {
+  if (audioElement)
     cd_stop();
-    if (audioElements[track].readyState == 0)
-      audioElements[track].load();
-    else
-      audioElements[track].currentTime = 0;
-    audioElements[track].loop = (loop != 0);
-    audioElements[track].play();
-    playingTrack = track;
-  }
+
+  audioElement = document.createElement('audio');
+  audioElement.setAttribute('src', 'game/kichiku/' + ('0' + track).substr(-2) + '.ogg');
+  audioElement.setAttribute('controls', true);
+  document.body.appendChild(audioElement);
+  audioElement.trackno = track;
+  audioElement.load();
+  audioElement.loop = (loop != 0);
+  audioElement.play();
 }
 
 function cd_stop() {
-  if (playingTrack && audioElements[playingTrack]) {
-    audioElements[playingTrack].pause();
-    playingTrack = null;
+  if (audioElement) {
+    audioElement.pause();
+    document.body.removeChild(audioElement);
+    audioElement = null;
   }
 }
 
 function cd_getposition() {
-  if (!playingTrack || !audioElements[playingTrack] || audioElements[playingTrack].ended)
+  if (!audioElement || audioElement.ended)
     return 0;
 
-  time = Math.round(audioElements[playingTrack].currentTime * 75);
-  return playingTrack | time << 8;
+  time = Math.round(audioElement.currentTime * 75);
+  return audioElement.trackno | time << 8;
 }
 
 // This function is called by common.js when the NaCl module is
