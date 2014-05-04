@@ -64,10 +64,11 @@ static int mouse_to_rawkey(int button) {
 /* Event½èÍý */
 static void sdl_getEvent(void) {
 	SDL_Event e;
-	boolean m2b = FALSE, msg_skip = FALSE;
+	boolean m2b = FALSE, msg_skip = FALSE, had_event = FALSE;
 	int i;
 	
 	while (SDL_PollEvent(&e)) {
+		had_event = TRUE;
 		switch (e.type) {
 		case SDL_ACTIVEEVENT:
 			if (e.active.state & SDL_APPMOUSEFOCUS) {
@@ -150,6 +151,7 @@ static void sdl_getEvent(void) {
 			break;
 		}
 	}
+	if (!had_event) usleep(1000);
 	
 	if (m2b) {
 		menu_open();
