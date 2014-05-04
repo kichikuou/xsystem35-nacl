@@ -112,24 +112,33 @@ void NaclAudio::callback(void* samples, uint32_t buffer_size) {
   pthread_cond_signal(cond_);
 }
 
-int audio_open(audiodevice_t* audio, chanfmt_t fmt) {
+static int audio_open(audiodevice_t* audio, chanfmt_t fmt) {
   return static_cast<NaclAudio*>(audio->data_pcm)->open(audio, fmt);
 }
 
-int audio_close(audiodevice_t* audio) {
+static int audio_close(audiodevice_t* audio) {
   return static_cast<NaclAudio*>(audio->data_pcm)->close(audio);
 }
 
-int audio_write(audiodevice_t* audio, unsigned char* buf, int cnt) {
+static int audio_write(audiodevice_t* audio, unsigned char* buf, int cnt) {
   return static_cast<NaclAudio*>(audio->data_pcm)->write(audio, buf, cnt);
 }
 
-boolean audio_writable(audiodevice_t* audio) {
+static boolean audio_writable(audiodevice_t* audio) {
   return static_cast<NaclAudio*>(audio->data_pcm)->writable() ? TRUE : FALSE;
 }
 
-boolean audio_playing(audiodevice_t* audio) {
+static boolean audio_playing(audiodevice_t* audio) {
   return static_cast<NaclAudio*>(audio->data_pcm)->playing() ? TRUE : FALSE;
+}
+
+static void mixer_set_level(audiodevice_t* dev, int ch, int level) {
+  fprintf(stderr, "mixer_set_level: not implemented\n");
+}
+
+static int mixer_get_level(audiodevice_t* dev, int ch) {
+  fprintf(stderr, "mixer_get_level: not implemented\n");
+  return 100;
 }
 
 int nacl_audio_exit(audiodevice_t* dev) {
@@ -157,8 +166,8 @@ int nacl_audio_init(audiodevice_t* dev) {
   dev->write = audio_write;
   dev->writable = audio_writable;
   dev->playing = audio_playing;
-  dev->mix_set = NULL;
-  dev->mix_get = NULL;
+  dev->mix_set = mixer_set_level;
+  dev->mix_get = mixer_get_level;
   dev->exit    = nacl_audio_exit;
 	
   return OK;

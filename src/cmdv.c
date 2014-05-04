@@ -1049,6 +1049,7 @@ static void va_init_itimer() {
 }
 
 static void va_pause_itimer() {
+	WARNING("Timer is not supported\n");
 #if 0 // FIXME
 	struct itimerval value;
 
@@ -1061,6 +1062,7 @@ static void va_pause_itimer() {
 }
 
 static void va_unpause_itimer() {
+	WARNING("Timer is not supported\n");
 #if 0 // FIXME
 	struct itimerval value;
 	

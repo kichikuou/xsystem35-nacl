@@ -109,7 +109,7 @@ static int get_command() {
         if (music_msg.status != MUSIC_TX)
           return 0;
 
-	fprintf(stderr, "get command %d, len = %d\n", music_msg.command, music_msg.client_data_length);
+	// fprintf(stderr, "get command %d, len = %d\n", music_msg.command, music_msg.client_data_length);
 	switch(music_msg.command) {
 	case MUS_CDROM_START:
 		v[0] = ((int *)music_msg.client_data)[0];
