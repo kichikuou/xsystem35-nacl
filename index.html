@@ -22,7 +22,14 @@ toolchain it supports, we set custom data attributes on the body. Those
 attributes are read by common.js to determine which toolchains are supported
 for the example.
 -->
-<body data-name="xsystem35" data-tools="newlib glibc pnacl linux" data-configs="Debug Release" data-path="src/{tc}/{config}" data-width=640 data-height=480>
+<body data-name="xsystem35"
+      data-tools="newlib glibc pnacl linux"
+      data-configs="Debug Release"
+      data-path="src/{tc}/{config}"
+      data-width=640
+      data-height=480
+      data-attrs="gamedir=game/kichiku"
+      >
   <h2>Status: <code id="statusField">NO-STATUS</code></h2>
   <!--
   Just as in part1, the <embed> element will be wrapped inside the <div>

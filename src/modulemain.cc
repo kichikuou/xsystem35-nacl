@@ -37,14 +37,19 @@ public:
     RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
 
     nacl_io_init_ppapi(pp_instance(), pp::Module::Get()->get_browser_interface());
-    // FIXME: make mount point configurable by argv
     umount("/");
-    if (mount("game/kichiku", "/", "httpfs", 0, "") != 0)
-      fprintf(stderr, "mount failed: %s\n", strerror(errno));
-    if (mount("Koruri-20140319", "fonts", "httpfs", 0, "") != 0)
-      fprintf(stderr, "mount failed: %s\n", strerror(errno));
+
+    for (int i = 0; i < argc; i++) {
+      if (!strcmp(argn[i], "gamedir")) {
+        if (mount(argv[i], "/", "httpfs", 0, "") != 0)
+          fprintf(stderr, "%s: mount failed: %s\n", argv[i], strerror(errno));
+      }
+    }
+
+    if (mount("fonts", "fonts", "httpfs", 0, "") != 0)
+      fprintf(stderr, "fonts: mount failed: %s\n", strerror(errno));
     if (mount("", "save", "html5fs", 0, "type=TEMPORARY,expected_size=1048576") != 0)
-      fprintf(stderr, "save mount failed: %s\n", strerror(errno));
+      fprintf(stderr, "save: mount failed: %s\n", strerror(errno));
 
     return true;
   }
