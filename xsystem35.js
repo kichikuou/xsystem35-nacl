@@ -1,3 +1,5 @@
+var gamedir = 'game/kichiku';
+
 function setWindowSize(width, height) {
   var module = document.getElementById('nacl_module');
   module.setAttribute('width', width);
@@ -11,7 +13,7 @@ function cd_play(track, loop) {
     cd_stop();
 
   audioElement = document.createElement('audio');
-  audioElement.setAttribute('src', 'game/kichiku/' + ('0' + track).substr(-2) + '.ogg');
+  audioElement.setAttribute('src', gamedir + '/' + ('0' + track).substr(-2) + '.ogg');
   audioElement.setAttribute('controls', true);
   document.body.appendChild(audioElement);
   audioElement.trackno = track;
@@ -72,3 +74,18 @@ function handleMessage(message) {
     console.log(message);
   }
 }
+
+(function() {
+  var searchVars = {};
+  if (window.location.search.length > 1) {
+    var pairs = window.location.search.substr(1).split('&');
+    for (var key_ix = 0; key_ix < pairs.length; key_ix++) {
+      var keyValue = pairs[key_ix].split('=');
+      searchVars[unescape(keyValue[0])] =
+        keyValue.length > 1 ? unescape(keyValue[1]) : '';
+    }
+  }
+  if (searchVars.gamedir)
+    gamedir = searchVars.gamedir;
+  document.body.setAttribute('data-attrs', 'gamedir=' + gamedir);
+})();
