@@ -5,7 +5,7 @@ include $(NACL_SDK_ROOT)/tools/common.mk
 TARGET = xsystem35
 LIBS = vorbisfile vorbis ogg z SDL freetype bz2 ppapi_gles2 ppapi_cpp ppapi nacl_io
 
-CFLAGS = -I.. -I. -I$(NACL_SDK_ROOT)/toolchain/linux_x86_glibc/x86_64-nacl/usr/include/freetype2 -Wno-pointer-sign -Wno-invalid-source-encoding
+CFLAGS = -I.. -I. -I$(NACL_SDK_ROOT)/toolchain/linux_pnacl/usr/include/freetype2 -Wno-pointer-sign -Wno-invalid-source-encoding
 
 SRC_SYS35CMD := cmdb.c cmdc.c cmdd.c cmde.c cmdf.c cmdg.c cmdh.c cmdi.c cmdj.c cmdk.c cmdl.c cmdm.c cmdn.c cmdo.c cmdp.c cmdq.c cmds.c cmdt.c cmdu.c cmdv.c cmdw.c cmdy.c cmdz.c cmd2F.c cmd2F60.c
 SRC_CG    := pms.c vsp.c bmp.c qnt.c
