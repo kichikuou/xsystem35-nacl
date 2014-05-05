@@ -28,7 +28,7 @@ void NaclMsg::PostMessage(const pp::Var& msg) {
 pp::Var NaclMsg::SendMessage(pp::VarDictionary& msg) {
   int id = next_request_id_++;
   msg.Set("naclmsg_id", id);
-  fprintf(stderr, "naclmsg: send %d\n", id);
+  // fprintf(stderr, "naclmsg: send %d\n", id);
   instance_->PostMessage(msg);
 
   pthread_mutex_lock(&lock_);
@@ -51,7 +51,7 @@ void NaclMsg::HandleMessage(const pp::Var& msg) {
     fprintf(stderr, "unexpected naclmsg_id type\n");
     return;
   }
-  fprintf(stderr, "naclmsg: recv %d\n", msgid.AsInt());
+  // fprintf(stderr, "naclmsg: recv %d\n", msgid.AsInt());
   pthread_mutex_lock(&lock_);
   result_id_ = msgid.AsInt();
   result_ = dict.Get("result");

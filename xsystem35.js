@@ -52,6 +52,13 @@ function moduleDidLoad() {
   // common.naclModule.postMessage('hello');
 }
 
+function reply(data, value) {
+  result = { 'result': value,
+             'naclmsg_id': data['naclmsg_id'] };
+  // console.log(result);
+  common.naclModule.postMessage(result);
+}
+
 // This function is called by common.js when a message is received from the
 // NaCl module.
 function handleMessage(message) {
@@ -63,10 +70,7 @@ function handleMessage(message) {
   } else if (data.command == 'cd_stop') {
     cd_stop();
   } else if (data.command == 'cd_getposition') {
-    result = { 'result': cd_getposition(),
-               'naclmsg_id': data['naclmsg_id'] };
-    // console.log(result);
-    common.naclModule.postMessage(result);
+    reply(data, cd_getposition());
   } else if (typeof data === 'string') {
     console.log(data);  // debug message
   } else {
