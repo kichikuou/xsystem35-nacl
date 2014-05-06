@@ -15,7 +15,7 @@ function cd_play(track, loop) {
   audioElement = document.createElement('audio');
   audioElement.setAttribute('src', gamedir + '/' + ('0' + track).substr(-2) + '.ogg');
   audioElement.setAttribute('controls', true);
-  document.body.appendChild(audioElement);
+  document.getElementById('contents').appendChild(audioElement);
   audioElement.trackno = track;
   audioElement.load();
   audioElement.loop = (loop != 0);
@@ -25,7 +25,7 @@ function cd_play(track, loop) {
 function cd_stop() {
   if (audioElement) {
     audioElement.pause();
-    document.body.removeChild(audioElement);
+    audioElement.parentNode.removeChild(audioElement);
     audioElement = null;
   }
 }

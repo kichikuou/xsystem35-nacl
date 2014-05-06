@@ -5,6 +5,12 @@
   <meta http-equiv="Expires" content="-1">
   <title>xsystem35</title>
   <script type="text/javascript" src="common.js"></script>
+  <style>
+    #contents {
+      margin: 0 auto;
+      width: 640px;
+    }
+  </style>
 </head>
 <body data-name="xsystem35"
       data-tools="pnacl glibc"
@@ -13,9 +19,11 @@
       data-width=640
       data-height=480
       >
-  <h2>Status: <code id="statusField">NO-STATUS</code></h2>
-  <div id="listener"></div>
-  <div id="log"></div>
+  <div id="contents">
+    <div id="listener"></div>
+    <div id="log"></div>
+    <!-- <p>Status: <code id="statusField">NO-STATUS</code></p> -->
+  </div>
   <script type="text/javascript" src="xsystem35.js"></script>
 </body>
 </html>
