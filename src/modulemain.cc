@@ -62,12 +62,12 @@ public:
     if (view_rect.width() <= 0 || view_rect.height() <= 0)
       return;
 
-    if (sdl_initialized_)
-      return;
-
     SDL_NACL_SetInstance(pp_instance(),
                          pp::Module::Get()->get_browser_interface(),
                          view_rect.width(), view_rect.height());
+
+    if (sdl_initialized_)
+      return;
 
     pthread_create(&sdl_thread_, NULL, sdl_thread_start, NULL);
     sdl_initialized_ = true;

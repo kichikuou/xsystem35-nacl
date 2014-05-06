@@ -146,6 +146,9 @@ static void sdl_getEvent(void) {
 			}
 			break;
 #endif
+		case SDL_VIDEORESIZE:
+			SDL_UpdateRect(sdl_display, 0, 0, 0, 0);
+			break;
 		default:
 			printf("ev %x\n", e.type);
 			break;
@@ -214,6 +217,8 @@ static int check_button(void) {
 	return m1 | m2;
 }
 
+extern double g_nacl_scale;
+
 int sdl_getMouseInfo(MyPoint *p) {
 	sdl_getEvent();
 	
@@ -225,8 +230,8 @@ int sdl_getMouseInfo(MyPoint *p) {
 	}
 	
 	if (p) {
-		p->x = mousex - winoffset_x;
-		p->y = mousey - winoffset_y;
+		p->x = (mousex - winoffset_x) / g_nacl_scale;
+		p->y = (mousey - winoffset_y) / g_nacl_scale;
 	}
 	return check_button();
 }
