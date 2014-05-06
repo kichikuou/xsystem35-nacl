@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 #include <SDL/SDL.h>
 #include <glib.h>
 
@@ -61,6 +62,51 @@ static void sdl_pal_check(void) {
 	}
 }
 
+#define QSIZE 100
+
+struct {
+	pthread_mutex_t lock;
+	pthread_cond_t notempty;
+	pthread_t thread;
+	int num;
+	SDL_Rect rects[QSIZE];
+} g_update_queue;
+
+void *update_thread(void *arg) {
+	SDL_Rect rects[QSIZE];
+	int num;
+	for (;;) {
+		pthread_mutex_lock(&g_update_queue.lock);
+		while (g_update_queue.num == 0)
+			pthread_cond_wait(&g_update_queue.notempty, &g_update_queue.lock);
+		num = g_update_queue.num;
+		memcpy(rects, g_update_queue.rects, sizeof(SDL_Rect) * num);
+		g_update_queue.num = 0;
+		pthread_mutex_unlock(&g_update_queue.lock);
+		SDL_UpdateRects(sdl_display, num, rects);
+	}
+	return NULL;
+}
+
+void update_queue_init() {
+	pthread_mutex_init(&g_update_queue.lock, NULL);
+	pthread_cond_init(&g_update_queue.notempty, NULL);
+	g_update_queue.num = 0;
+	pthread_create(&g_update_queue.thread, NULL, update_thread, NULL);
+}
+
+void update_queue_add(int x, int y, int w, int h) {
+	if (!g_update_queue.thread)
+		update_queue_init();
+	pthread_mutex_lock(&g_update_queue.lock);
+	if (g_update_queue.num < QSIZE) {
+		setRect(g_update_queue.rects[g_update_queue.num], x, y, w, h);
+		g_update_queue.num++;
+	}
+	pthread_mutex_unlock(&g_update_queue.lock);
+	pthread_cond_signal(&g_update_queue.notempty);
+}
+
 /* off-screen ¤Î»ØÄêÎÎ°è¤ò Main Window ¤ØÅ¾Á÷ */
 void sdl_updateArea(MyRectangle *src, MyPoint *dst) {
 	SDL_Rect rect_s, rect_d;
@@ -69,8 +115,7 @@ void sdl_updateArea(MyRectangle *src, MyPoint *dst) {
 	setRect(rect_d, winoffset_x + dst->x, winoffset_y + dst->y, src->width, src->height);
 	
 	SDL_BlitSurface(sdl_dib, &rect_s, sdl_display, &rect_d);
-	
-	SDL_UpdateRect(sdl_display, winoffset_x + dst->x, winoffset_y + dst->y,
+	update_queue_add(winoffset_x + dst->x, winoffset_y + dst->y,
 		       src->width, src->height);
 }
 
