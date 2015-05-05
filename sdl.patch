@@ -1,35 +1,32 @@
---- SDL-1.2.14.bak/src/video/nacl/SDL_naclvideo.cc	2014-05-06 10:15:57.961620483 +0900
-+++ SDL-1.2.14/src/video/nacl/SDL_naclvideo.cc	2014-05-06 09:34:37.071792975 +0900
-@@ -40,12 +40,12 @@
- static int g_nacl_video_width;
- static int g_nacl_video_height;
- 
--static int kNaClFlushDelayMs = 20;
--
- #include "SDL_nacl.h"
- 
- extern "C" {
+diff --git a/src/video/nacl/SDL_naclvideo.c b/src/video/nacl/SDL_naclvideo.c
+index ef1179d..dc4d152 100644
+--- a/src/video/nacl/SDL_naclvideo.c
++++ b/src/video/nacl/SDL_naclvideo.c
+@@ -45,10 +45,18 @@ struct WMcursor {
+   // software cursor emulation.
+ };
  
 +double g_nacl_scale = 1.0;
 +
- #ifdef SDL_VIDEO_OPENGL_REGAL
- #include "SDL_opengl.h"
- #endif
-@@ -94,6 +94,8 @@
-   if (is_resize && current_video) {
++static inline double min(double x, double y) {
++  return x < y ? x : y;
++}
++
+ void NACL_SetScreenResolution(int width, int height) {
+   if (current_video) {
      current_video->hidden->ow = width;
      current_video->hidden->oh = height;
-+    g_nacl_scale = std::min((double)width / current_video->hidden->w,
-+                            (double)height / current_video->hidden->h);
++    g_nacl_scale = min((double)width / current_video->hidden->w,
++		       (double)height / current_video->hidden->h);
      SDL_PrivateResize(width, height);
-   }
- }
-@@ -309,6 +311,8 @@
-       start + (_this->hidden->w * _this->hidden->h * _this->hidden->bpp / 8);
-   for (unsigned char *p = start + 3; p < end; p += 4) *p = 0xFF;
+   } else {
+     g_nacl_video_width = width;
+@@ -285,6 +293,8 @@ static void NACL_UpdateRects(_THIS, int numrects, SDL_Rect *rects) {
+   for (p = start + 3; p < end; p += 4)
+     *p = 0xFF;
  
-+  g_nacl_graphics2d_interface->SetScale(_this->hidden->context2d, g_nacl_scale);
++  dd->ppb_graphics2d->SetScale(dd->context2d, g_nacl_scale);
 +
    // Flush on the main thread.
-   for (int i = 0; i < numrects; ++i) {
-     SDL_Rect &r = rects[i];
+   for (i = 0; i < numrects; ++i) {
+     SDL_Rect *r = rects+i;

@@ -217,7 +217,7 @@ static int check_button(void) {
 	return m1 | m2;
 }
 
-double g_nacl_scale = 1.0;
+extern double g_nacl_scale;
 
 int sdl_getMouseInfo(MyPoint *p) {
 	sdl_getEvent();
