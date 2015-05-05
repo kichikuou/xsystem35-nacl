@@ -1,4 +1,5 @@
 var gamedir = 'game/kichiku';
+var bgmdir = null;
 
 function setWindowSize(width, height) {
   var module = document.getElementById('nacl_module');
@@ -13,7 +14,7 @@ function cd_play(track, loop) {
     cd_stop();
 
   audioElement = document.createElement('audio');
-  audioElement.setAttribute('src', gamedir + '/' + ('0' + track).substr(-2) + '.ogg');
+  audioElement.setAttribute('src', bgmdir + 'track' + track + '.wav');
   audioElement.setAttribute('controls', true);
   document.getElementById('contents').appendChild(audioElement);
   audioElement.trackno = track;
@@ -56,7 +57,7 @@ function reply(data, value) {
   result = { 'result': value,
              'naclmsg_id': data['naclmsg_id'] };
   // console.log(result);
-  common.naclModule.postMessage(result);
+  common.naclModule.postMessage({'naclmsg':result});
 }
 
 // This function is called by common.js when a message is received from the
@@ -92,4 +93,8 @@ function handleMessage(message) {
   if (searchVars.gamedir)
     gamedir = searchVars.gamedir;
   document.body.setAttribute('data-attrs', 'gamedir=' + gamedir);
+
+  webkitRequestFileSystem(PERSISTENT, 0, function(fs) {
+    bgmdir = fs.root.toURL();
+  });
 })();

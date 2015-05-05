@@ -2,10 +2,14 @@ VALID_TOOLCHAINS := pnacl
 
 include $(NACL_SDK_ROOT)/tools/common.mk
 
-TARGET = xsystem35
-LIBS = vorbisfile vorbis ogg z SDL freetype bz2 ppapi_gles2 ppapi_cpp ppapi nacl_io
+# What's the right way to determine this path?
+FREETYPE_CONFIG := $(NACL_SDK_ROOT)/toolchain/$(shell $(NACL_SDK_ROOT)/tools/getos.py)_pnacl/le32-nacl/usr/bin/freetype-config
+FREETYPE_INC := $(shell $(FREETYPE_CONFIG) --cflags)
 
-CFLAGS = -I.. -I. -I$(NACL_SDK_ROOT)/toolchain/linux_pnacl/usr/include/freetype2 -Wno-pointer-sign -Wno-invalid-source-encoding
+TARGET = xsystem35
+LIBS = vorbisfile vorbis ogg SDL freetype png bz2 z ppapi_simple ppapi_gles2 ppapi_cpp ppapi nacl_io
+
+CFLAGS = -I.. -I. $(FREETYPE_INC) -Wno-pointer-sign -Wno-invalid-source-encoding
 
 SRC_SYS35CMD := cmdb.c cmdc.c cmdd.c cmde.c cmdf.c cmdg.c cmdh.c cmdi.c cmdj.c cmdk.c cmdl.c cmdm.c cmdn.c cmdo.c cmdp.c cmdq.c cmds.c cmdt.c cmdu.c cmdv.c cmdw.c cmdy.c cmdz.c cmd2F.c cmd2F60.c
 SRC_CG    := pms.c vsp.c bmp.c qnt.c

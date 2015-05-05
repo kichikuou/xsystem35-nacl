@@ -7,13 +7,20 @@
 
 NaclMsg* g_naclMsg;
 
-NaclMsg::NaclMsg(pp::Instance* instance)
+static void MessageHandler(const pp::Var& key,
+			   const pp::Var& value,
+			   void* user_data) {
+  ((NaclMsg*)user_data)->HandleMessage(value);
+}
+
+NaclMsg::NaclMsg(PSInstance* instance)
   : instance_(instance)
   , next_request_id_(0)
   , result_id_(-1)
   , result_(pp::Var::Null()) {
   pthread_mutex_init(&lock_, NULL);
   pthread_cond_init(&cond_, NULL);
+  instance->RegisterMessageHandler("naclmsg", MessageHandler, this);
 }
 
 NaclMsg::~NaclMsg() {

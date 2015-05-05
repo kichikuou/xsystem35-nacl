@@ -5,6 +5,7 @@
 
 #include <pthread.h>
 #include <ppapi/cpp/var.h>
+#include <ppapi_simple/ps_instance.h>
 
 namespace pp {
   class Instance;
@@ -13,10 +14,10 @@ namespace pp {
 
 class NaclMsg {
  public:
-  NaclMsg(pp::Instance* instance);
+  NaclMsg(PSInstance* instance);
   ~NaclMsg();
 
-  pp::Instance* instance() const { return instance_; }
+  PSInstance* instance() const { return instance_; }
 
   void PostMessage(const pp::Var&);
   pp::Var SendMessage(pp::VarDictionary&);
@@ -24,7 +25,7 @@ class NaclMsg {
   void HandleMessage(const pp::Var&);
 
  private:
-  pp::Instance* instance_;
+  PSInstance* instance_;
   pthread_mutex_t lock_;
   pthread_cond_t cond_;
   int next_request_id_;
