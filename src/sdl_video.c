@@ -23,7 +23,7 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <unistd.h>
+#include <time.h>
 #include <pthread.h>
 #include <SDL/SDL.h>
 #include <glib.h>
@@ -46,26 +46,39 @@ struct sdl_private_data *sdl_videodev;
 
 struct {
 	pthread_mutex_t lock;
-	pthread_cond_t notempty;
 	pthread_t thread;
 	int num;
 	SDL_Rect rects[QSIZE];
 } g_update_queue;
 
 static void *update_thread(void *arg) {
+	struct timespec start, end, wait;
+	wait.tv_sec = 0;
+
 	for (;;) {
 		pthread_mutex_lock(&g_update_queue.lock);
-		while (g_update_queue.num == 0)
-			pthread_cond_wait(&g_update_queue.notempty, &g_update_queue.lock);
-		pthread_mutex_unlock(&g_update_queue.lock);
-		usleep(5000); /* wait for subsequent changes */
-		pthread_mutex_lock(&g_update_queue.lock);
+		if (g_update_queue.num == 0) {
+			pthread_mutex_unlock(&g_update_queue.lock);
+			wait.tv_nsec = 16000000;
+			nanosleep(&wait, NULL);
+			continue;
+		}
+		clock_gettime(CLOCK_MONOTONIC, &start);
 		if (g_update_queue.num >= QSIZE) /* full update */
 			SDL_UpdateRect(sdl_display, 0, 0, 0, 0);
 		else
 			SDL_UpdateRects(sdl_display, g_update_queue.num, g_update_queue.rects);
 		g_update_queue.num = 0;
+
 		pthread_mutex_unlock(&g_update_queue.lock);
+
+		clock_gettime(CLOCK_MONOTONIC, &end);
+		long elapsed = end.tv_nsec - start.tv_nsec;
+		if (elapsed < 0)
+			elapsed += 1000000000;
+		wait.tv_sec = 0;
+		wait.tv_nsec = 16000000 - elapsed;
+		nanosleep(&wait, NULL);
 	}
 	return NULL;
 }
@@ -74,7 +87,6 @@ static void update_queue_init() {
 	if (g_update_queue.thread)
 		return;
 	pthread_mutex_init(&g_update_queue.lock, NULL);
-	pthread_cond_init(&g_update_queue.notempty, NULL);
 	g_update_queue.num = 0;
 	pthread_create(&g_update_queue.thread, NULL, update_thread, NULL);
 }
@@ -91,7 +103,6 @@ void sdl_updateDisplay(int x, int y, int w, int h) {
 		g_update_queue.num++;
 	}
 	pthread_mutex_unlock(&g_update_queue.lock);
-	pthread_cond_signal(&g_update_queue.notempty);
 }
 
 /* SDL の初期化 */
