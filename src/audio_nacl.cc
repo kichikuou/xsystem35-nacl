@@ -7,13 +7,12 @@ extern "C" {
 #undef min
 #undef max
 
-#include "naclmsg.h"
-
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
 #include <ppapi/cpp/audio.h>
+#include <ppapi_simple/ps_instance.h>
 
 class NaclAudio {
 public:
@@ -44,7 +43,7 @@ int NaclAudio::open(audiodevice_t* audio, chanfmt_t fmt) {
   if (ppaudio_)
     close(audio);
 
-  pp::Instance* instance = g_naclMsg->instance();
+  pp::Instance* instance = PSInstance::GetInstance();
 
   PP_AudioSampleRate sample_rate = pp::AudioConfig::RecommendSampleRate(instance);
   if (sample_rate != fmt.rate)

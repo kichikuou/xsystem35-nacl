@@ -43,7 +43,7 @@ static int nacl_main(int, char*[]) {
 
   wait_didChangeView();
 
-  g_naclMsg = new NaclMsg(PSInstance::GetInstance());
+  g_naclMsg = new NaclMsg();
 
   fprintf(stderr, "SDL: calling SDL_main\n");
   char* argv[2];

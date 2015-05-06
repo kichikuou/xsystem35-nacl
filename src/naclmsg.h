@@ -14,10 +14,8 @@ namespace pp {
 
 class NaclMsg {
  public:
-  NaclMsg(PSInstance* instance);
+  NaclMsg();
   ~NaclMsg();
-
-  PSInstance* instance() const { return instance_; }
 
   void PostMessage(const pp::Var&);
   pp::Var SendMessage(pp::VarDictionary&);
@@ -25,7 +23,6 @@ class NaclMsg {
   void HandleMessage(const pp::Var&);
 
  private:
-  PSInstance* instance_;
   pthread_mutex_t lock_;
   pthread_cond_t cond_;
   int next_request_id_;
