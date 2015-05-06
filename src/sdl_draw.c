@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <pthread.h>
 #include <SDL/SDL.h>
 #include <glib.h>
@@ -73,17 +74,16 @@ struct {
 } g_update_queue;
 
 void *update_thread(void *arg) {
-	SDL_Rect rects[QSIZE];
-	int num;
 	for (;;) {
 		pthread_mutex_lock(&g_update_queue.lock);
 		while (g_update_queue.num == 0)
 			pthread_cond_wait(&g_update_queue.notempty, &g_update_queue.lock);
-		num = g_update_queue.num;
-		memcpy(rects, g_update_queue.rects, sizeof(SDL_Rect) * num);
+		pthread_mutex_unlock(&g_update_queue.lock);
+		usleep(5000);
+		pthread_mutex_lock(&g_update_queue.lock);
+		SDL_UpdateRects(sdl_display, g_update_queue.num, g_update_queue.rects);
 		g_update_queue.num = 0;
 		pthread_mutex_unlock(&g_update_queue.lock);
-		SDL_UpdateRects(sdl_display, num, rects);
 	}
 	return NULL;
 }
