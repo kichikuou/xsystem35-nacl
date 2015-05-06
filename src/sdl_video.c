@@ -42,7 +42,7 @@ static void makeDIB(int width, int height, int depth);
 
 struct sdl_private_data *sdl_videodev;
 
-#define QSIZE 100
+#define QSIZE 50
 
 struct {
 	pthread_mutex_t lock;
@@ -58,9 +58,12 @@ static void *update_thread(void *arg) {
 		while (g_update_queue.num == 0)
 			pthread_cond_wait(&g_update_queue.notempty, &g_update_queue.lock);
 		pthread_mutex_unlock(&g_update_queue.lock);
-		usleep(5000);
+		usleep(5000); /* wait for subsequent changes */
 		pthread_mutex_lock(&g_update_queue.lock);
-		SDL_UpdateRects(sdl_display, g_update_queue.num, g_update_queue.rects);
+		if (g_update_queue.num >= QSIZE) /* full update */
+			SDL_UpdateRect(sdl_display, 0, 0, 0, 0);
+		else
+			SDL_UpdateRects(sdl_display, g_update_queue.num, g_update_queue.rects);
 		g_update_queue.num = 0;
 		pthread_mutex_unlock(&g_update_queue.lock);
 	}
@@ -81,7 +84,9 @@ void sdl_willUpdateDisplay(void) {
 }
 
 void sdl_updateDisplay(int x, int y, int w, int h) {
-	if (g_update_queue.num < QSIZE) {
+	if ((x | y | w | h) == 0) {
+		g_update_queue.num = QSIZE; /* full update */
+	} else if (g_update_queue.num < QSIZE) {
 		setRect(g_update_queue.rects[g_update_queue.num], x, y, w, h);
 		g_update_queue.num++;
 	}
