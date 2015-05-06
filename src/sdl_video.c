@@ -23,6 +23,8 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <unistd.h>
+#include <pthread.h>
 #include <SDL/SDL.h>
 #include <glib.h>
 
@@ -40,6 +42,52 @@ static void makeDIB(int width, int height, int depth);
 
 struct sdl_private_data *sdl_videodev;
 
+#define QSIZE 100
+
+struct {
+	pthread_mutex_t lock;
+	pthread_cond_t notempty;
+	pthread_t thread;
+	int num;
+	SDL_Rect rects[QSIZE];
+} g_update_queue;
+
+static void *update_thread(void *arg) {
+	for (;;) {
+		pthread_mutex_lock(&g_update_queue.lock);
+		while (g_update_queue.num == 0)
+			pthread_cond_wait(&g_update_queue.notempty, &g_update_queue.lock);
+		pthread_mutex_unlock(&g_update_queue.lock);
+		usleep(5000);
+		pthread_mutex_lock(&g_update_queue.lock);
+		SDL_UpdateRects(sdl_display, g_update_queue.num, g_update_queue.rects);
+		g_update_queue.num = 0;
+		pthread_mutex_unlock(&g_update_queue.lock);
+	}
+	return NULL;
+}
+
+static void update_queue_init() {
+	if (g_update_queue.thread)
+		return;
+	pthread_mutex_init(&g_update_queue.lock, NULL);
+	pthread_cond_init(&g_update_queue.notempty, NULL);
+	g_update_queue.num = 0;
+	pthread_create(&g_update_queue.thread, NULL, update_thread, NULL);
+}
+
+void sdl_willUpdateDisplay(void) {
+	pthread_mutex_lock(&g_update_queue.lock);
+}
+
+void sdl_updateDisplay(int x, int y, int w, int h) {
+	if (g_update_queue.num < QSIZE) {
+		setRect(g_update_queue.rects[g_update_queue.num], x, y, w, h);
+		g_update_queue.num++;
+	}
+	pthread_mutex_unlock(&g_update_queue.lock);
+	pthread_cond_signal(&g_update_queue.notempty);
+}
 
 /* SDL の初期化 */
 int sdl_Initilize(void) {
@@ -66,6 +114,8 @@ int sdl_Initilize(void) {
 	sdl_shadow_init();
 	
 	joy_open();
+
+	update_queue_init();
 	return 0;
 }
 

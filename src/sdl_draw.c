@@ -25,8 +25,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <pthread.h>
 #include <SDL/SDL.h>
 #include <glib.h>
 
@@ -63,60 +61,16 @@ static void sdl_pal_check(void) {
 	}
 }
 
-#define QSIZE 100
-
-struct {
-	pthread_mutex_t lock;
-	pthread_cond_t notempty;
-	pthread_t thread;
-	int num;
-	SDL_Rect rects[QSIZE];
-} g_update_queue;
-
-void *update_thread(void *arg) {
-	for (;;) {
-		pthread_mutex_lock(&g_update_queue.lock);
-		while (g_update_queue.num == 0)
-			pthread_cond_wait(&g_update_queue.notempty, &g_update_queue.lock);
-		pthread_mutex_unlock(&g_update_queue.lock);
-		usleep(5000);
-		pthread_mutex_lock(&g_update_queue.lock);
-		SDL_UpdateRects(sdl_display, g_update_queue.num, g_update_queue.rects);
-		g_update_queue.num = 0;
-		pthread_mutex_unlock(&g_update_queue.lock);
-	}
-	return NULL;
-}
-
-void update_queue_init() {
-	pthread_mutex_init(&g_update_queue.lock, NULL);
-	pthread_cond_init(&g_update_queue.notempty, NULL);
-	g_update_queue.num = 0;
-	pthread_create(&g_update_queue.thread, NULL, update_thread, NULL);
-}
-
-void update_queue_add(int x, int y, int w, int h) {
-	if (!g_update_queue.thread)
-		update_queue_init();
-	pthread_mutex_lock(&g_update_queue.lock);
-	if (g_update_queue.num < QSIZE) {
-		setRect(g_update_queue.rects[g_update_queue.num], x, y, w, h);
-		g_update_queue.num++;
-	}
-	pthread_mutex_unlock(&g_update_queue.lock);
-	pthread_cond_signal(&g_update_queue.notempty);
-}
-
 /* off-screen の指定領域を Main Window へ転送 */
 void sdl_updateArea(MyRectangle *src, MyPoint *dst) {
 	SDL_Rect rect_s, rect_d;
 	
 	setRect(rect_s, src->x, src->y, src->width, src->height);
 	setRect(rect_d, winoffset_x + dst->x, winoffset_y + dst->y, src->width, src->height);
-	
+	sdl_willUpdateDisplay();
 	SDL_BlitSurface(sdl_dib, &rect_s, sdl_display, &rect_d);
-	update_queue_add(winoffset_x + dst->x, winoffset_y + dst->y,
-		       src->width, src->height);
+	sdl_updateDisplay(winoffset_x + dst->x, winoffset_y + dst->y,
+					  src->width, src->height);
 }
 
 /* 全画面更新 */
@@ -125,10 +79,9 @@ static void sdl_updateAll() {
 
 	setRect(rect, winoffset_x, winoffset_y, view_w, view_h);
 	
+	sdl_willUpdateDisplay();
 	SDL_BlitSurface(sdl_dib, &sdl_view, sdl_display, &rect);
-	
-	SDL_UpdateRect(sdl_display, 0, 0, 0, 0);
-
+	sdl_updateDisplay(0, 0, 0, 0);
 }
 
 /* Color の複数個指定 */
@@ -508,8 +461,9 @@ static __inline void sdl_fade_blit(void) {
 	SDL_Rect r_dst;
 	setRect(r_dst, winoffset_x, winoffset_y, view_w, view_h);
 
+	sdl_willUpdateDisplay();
 	SDL_BlitSurface(sdl_dib, &sdl_view, sdl_display, &r_dst);
-	SDL_UpdateRect(sdl_display, 0, 0, view_w, view_h);
+	sdl_updateDisplay(0, 0, view_w, view_h);
 }
 
 void sdl_fadeIn(int step) {

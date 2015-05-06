@@ -29,6 +29,7 @@
 
 #include "portab.h"
 #include "system.h"
+#include "sdl_core.h"
 #include "sdl_private.h"
 #include "cg.h"
 #include "nact.h"
@@ -146,8 +147,9 @@ void sdl_scaledCopyArea(SDL_Surface *src, SDL_Surface *dst, int sx, int sy, int 
 }
 
 void sdl_zoom(int x, int y, int w, int h) {
+	sdl_willUpdateDisplay();
 	sdl_scaledCopyArea(sdl_dib, sdl_display, x, y, w, h, 0, 0, view_w, view_h, 0);
-	SDL_UpdateRect(sdl_display, 0, 0, view_w, view_h);
+	sdl_updateDisplay(0, 0, view_w, view_h);
 }
 
 

@@ -45,6 +45,8 @@ extern agsurface_t *sdl_getDIB(void);
 /* 画面更新 */
 extern void sdl_updateArea(MyRectangle *src, MyPoint *dst);
 extern void sdl_fullScreen(boolean on);
+extern void sdl_willUpdateDisplay(void);
+extern void sdl_updateDisplay(int x, int y, int w, int h);
 
 /* パレット関係 */
 extern void sdl_setPallet(Pallet256 *pal, int src, int cnt);
