@@ -47,6 +47,7 @@ extern void sdl_updateArea(MyRectangle *src, MyPoint *dst);
 extern void sdl_fullScreen(boolean on);
 extern void sdl_willUpdateDisplay(void);
 extern void sdl_updateDisplay(int x, int y, int w, int h);
+extern void sdl_updateAll(boolean resetDisplay);
 
 /* パレット関係 */
 extern void sdl_setPallet(Pallet256 *pal, int src, int cnt);

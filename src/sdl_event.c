@@ -147,7 +147,7 @@ static void sdl_getEvent(void) {
 			break;
 #endif
 		case SDL_VIDEORESIZE:
-			SDL_UpdateRect(sdl_display, 0, 0, 0, 0);
+			sdl_updateAll(true);
 			break;
 		default:
 			printf("ev %x\n", e.type);

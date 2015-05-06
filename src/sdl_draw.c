@@ -74,12 +74,14 @@ void sdl_updateArea(MyRectangle *src, MyPoint *dst) {
 }
 
 /* 全画面更新 */
-static void sdl_updateAll() {
+void sdl_updateAll(boolean resetDisplay) {
 	SDL_Rect rect;
 
 	setRect(rect, winoffset_x, winoffset_y, view_w, view_h);
 	
 	sdl_willUpdateDisplay();
+	if (resetDisplay)
+		sdl_display = SDL_SetVideoMode(view_w, view_h, sdl_vinfo->vfmt->BitsPerPixel, sdl_vflag); // Is this safe?
 	SDL_BlitSurface(sdl_dib, &sdl_view, sdl_display, &rect);
 	sdl_updateDisplay(0, 0, 0, 0);
 }
@@ -419,7 +421,7 @@ static void fader_in(int n) {
 	
 	if (n == 255) {
 		SDL_FreeSurface(s_fader);
-		sdl_updateAll();
+		sdl_updateAll(false);
 		g_free(work);
 		g_free(disp);
 		return;

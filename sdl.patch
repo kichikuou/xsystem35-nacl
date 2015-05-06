@@ -1,5 +1,5 @@
 diff --git a/src/video/nacl/SDL_naclvideo.c b/src/video/nacl/SDL_naclvideo.c
-index ef1179d..dc4d152 100644
+index ef1179d..395eda4 100644
 --- a/src/video/nacl/SDL_naclvideo.c
 +++ b/src/video/nacl/SDL_naclvideo.c
 @@ -45,10 +45,18 @@ struct WMcursor {
@@ -21,12 +21,13 @@ index ef1179d..dc4d152 100644
      SDL_PrivateResize(width, height);
    } else {
      g_nacl_video_width = width;
-@@ -285,6 +293,8 @@ static void NACL_UpdateRects(_THIS, int numrects, SDL_Rect *rects) {
-   for (p = start + 3; p < end; p += 4)
-     *p = 0xFF;
+@@ -223,6 +231,9 @@ SDL_Surface *NACL_SetVideoMode(_THIS, SDL_Surface *current, int width,
+                                                PP_TRUE /* is_always_opaque */);
+     assert(dd->context2d != 0);
  
-+  dd->ppb_graphics2d->SetScale(dd->context2d, g_nacl_scale);
++    dd->ppb_graphics2d->SetScale(dd->context2d, g_nacl_scale);
++    SDL_SetMouseRange(width * g_nacl_scale, height * g_nacl_scale);
 +
-   // Flush on the main thread.
-   for (i = 0; i < numrects; ++i) {
-     SDL_Rect *r = rects+i;
+     if (!dd->ppb_instance->BindGraphics(dd->instance, dd->context2d)) {
+       SDL_SetError("Couldn't bind the graphic2d context");
+       return NULL;
