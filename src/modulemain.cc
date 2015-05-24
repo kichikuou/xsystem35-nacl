@@ -35,7 +35,7 @@ static void wait_didChangeView() {
 
 static int nacl_main(int, char*[]) {
   umount("/");
-  const char* http_mnt = "/";
+  const char* http_mnt = "/xsystem35";
   if (mount(http_mnt, "/", "httpfs", 0, "") != 0)
     fprintf(stderr, "%s: mount failed: %s\n", http_mnt, strerror(errno));
   if (mount("", "gamedata", "html5fs", 0, "type=PERSISTENT,expected_size=62914560") != 0)
