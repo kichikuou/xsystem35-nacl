@@ -39,29 +39,14 @@ function cd_getposition() {
   return audioElement.trackno | time << 8;
 }
 
-// This function is called by common.js when the NaCl module is
-// loaded.
-function moduleDidLoad() {
-  // Once we load, hide the plugin. In this example, we don't display anything
-  // in the plugin, so it is fine to hide it.
-  // common.hideModule();
-
-  // After the NaCl module has loaded, common.naclModule is a reference to the
-  // NaCl module's <embed> element.
-  //
-  // postMessage sends a message to it.
-  // common.naclModule.postMessage('hello');
-}
-
 function reply(data, value) {
   result = { 'result': value,
              'naclmsg_id': data['naclmsg_id'] };
   // console.log(result);
-  common.naclModule.postMessage({'naclmsg':result});
+  xsystem35.postMessage({'naclmsg':result});
 }
 
-// This function is called by common.js when a message is received from the
-// NaCl module.
+// This function is called when a message is received from the NaCl module.
 function handleMessage(message) {
   var data = message.data;
   if (data.command == 'set_window_size') {
