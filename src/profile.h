@@ -25,7 +25,7 @@
 #ifndef __PROFILE_H__
 #define __PROFILE_H__
 
-#define RC_NAME ".xsys35rc"
+#define RC_NAME "xsys35rc"
 
 /* 一行は 256 文字を越えない */
 #define RC_LINE_CHARS_MAX 256
