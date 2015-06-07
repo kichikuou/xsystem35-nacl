@@ -7,6 +7,10 @@
 #include "portab.h"
 #include "cdrom.h"
 
+extern "C" {
+#include "system.h"
+}
+
 static int  cdrom_init(char *);
 static int  cdrom_exit();
 static int  cdrom_start(int, int);
@@ -74,8 +78,8 @@ int cdrom_getPlayingInfo(cd_time *info) {
   info->t = t & 0xff;
   FRAMES_TO_MSF(t >> 8, &info->m, &info->s, &info->f);
 
-  fprintf(stderr, "cdrom_getPlayingInfo: %d %d %d %d\n",
-          info->t, info->m, info->s, info->f);
+  NOTICE("cdrom_getPlayingInfo: %d %d %d %d\n",
+		 info->t, info->m, info->s, info->f);
 
   return OK;
 }

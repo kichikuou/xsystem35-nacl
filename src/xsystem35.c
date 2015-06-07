@@ -214,7 +214,7 @@ static void sys35_usage(boolean verbose) {
 	exit(1);
 }
 
-void sys_message(char *format, ...) {
+void sys_message(const char *format, ...) {
 	va_list args;
 	
 	va_start(args, format);
@@ -236,7 +236,7 @@ void sys_message(char *format, ...) {
 
 }
 
-void sys_error(char *format, ...) {
+void sys_error(const char *format, ...) {
 	va_list args;
 	
 	va_start(args, format);

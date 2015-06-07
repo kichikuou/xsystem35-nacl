@@ -35,9 +35,9 @@
 #endif
 
 /* should define in somewhere */ 
-extern void sys_error(char *format, ...);    /* show nessafe and exit system */
+extern void sys_error(const char *format, ...);    /* show nessafe and exit system */
 extern void sys_exit(int code);              /* exit system with code */
-extern void sys_message(char *format, ...);  /* show various message */
+extern void sys_message(const char *format, ...);  /* show various message */
 extern void sys_reset();
 extern int  sys_nextdebuglv;                 /* message level */
 
