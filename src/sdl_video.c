@@ -76,9 +76,10 @@ static void *update_thread(void *arg) {
 		long elapsed = end.tv_nsec - start.tv_nsec;
 		if (elapsed < 0)
 			elapsed += 1000000000;
-		wait.tv_sec = 0;
-		wait.tv_nsec = 16000000 - elapsed;
-		nanosleep(&wait, NULL);
+		if (elapsed >= 0 && elapsed < 16000000) {
+			wait.tv_nsec = 16000000 - elapsed;
+			nanosleep(&wait, NULL);
+		}
 	}
 	return NULL;
 }
