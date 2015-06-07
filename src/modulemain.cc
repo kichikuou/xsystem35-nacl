@@ -33,7 +33,7 @@ static void wait_didChangeView() {
   }
 }
 
-static int nacl_main(int, char*[]) {
+static int nacl_main(int argc, char* argv[]) {
   umount("/");
   const char* http_mnt = "xsystem35";
   if (mount(http_mnt, "/", "httpfs", 0, "") != 0)
@@ -47,11 +47,7 @@ static int nacl_main(int, char*[]) {
 
   g_naclMsg = new NaclMsg();
 
-  fprintf(stderr, "SDL: calling SDL_main\n");
-  char* argv[2];
-  argv[0] = (char*)"xsystem35";
-  argv[1] = NULL;
-  int rtn = SDL_main(1, argv);
+  int rtn = SDL_main(argc, argv);
   fprintf(stderr, "SDL: SDL_main returned: %d\n", rtn);
   exit(rtn);
   return NULL;
