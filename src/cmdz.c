@@ -35,6 +35,7 @@
 #include "message.h"
 #include "imput.h"
 #include "nact.h"
+#include "naclmsg.h"
 
 void commandZC() {
 	/* システムの使用環境を変更する */
@@ -307,7 +308,7 @@ void commandZZ0() {
 	DEBUG_COMMAND("ZZ0 %d:\n",sw);
 	
 	if (sw == 0) {
-		sys_exit(sysVar[0]);
+		naclmsg_exit(sysVar[0]);
 	} else if (sw == 1) {
 		while (TRUE) {
 			usleep(1000*1000);

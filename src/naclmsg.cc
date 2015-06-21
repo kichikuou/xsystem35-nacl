@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/var.h>
 #include <ppapi/cpp/var_dictionary.h>
@@ -66,6 +67,17 @@ void NaclMsg::HandleMessage(const pp::Var& msg) {
   pthread_cond_signal(&cond_);
 }
 
+void naclmsg_exit(int code) {
+  if (!g_naclMsg)
+    return;
+  pp::VarDictionary msg;
+  msg.Set("command", "exit");
+  msg.Set("code", code);
+  g_naclMsg->PostMessage(msg);
+  for (;;)
+	  usleep(1000*1000);
+}
+
 void naclmsg_setWindowSize(int width, int height) {
   if (!g_naclMsg)
     return;
@@ -75,4 +87,3 @@ void naclmsg_setWindowSize(int width, int height) {
   msg.Set("height", height);
   g_naclMsg->PostMessage(msg);
 }
-

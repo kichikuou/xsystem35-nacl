@@ -35,6 +35,7 @@ extern NaclMsg* g_naclMsg;
 extern "C" {
 #endif // __cplusplus
 
+void naclmsg_exit(int code);
 void naclmsg_setWindowSize(int width, int height);
 
 #ifdef __cplusplus
