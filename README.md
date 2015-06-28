@@ -21,8 +21,8 @@
         -URL=https://github.com/sbc100/SDL-mirror.git@b3ef807
         +URL=https://github.com/kichikuou/SDL-mirror.git@2aee2dc
          LICENSE=LGPL2
-         -DEPENDS=(nacl-spawn regal)
-         +DEPENDS=(nacl-spawn)
+        -DEPENDS=(nacl-spawn regal)
+        +DEPENDS=(nacl-spawn)
          SHA1=0c5f193ced810b0d7ce3ab06d808cbb5eef03a2c
         ```
 
