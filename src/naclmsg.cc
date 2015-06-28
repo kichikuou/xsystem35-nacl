@@ -1,18 +1,19 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/var.h>
 #include <ppapi/cpp/var_dictionary.h>
+#include <ppapi_simple/ps.h>
 #include <ppapi_simple/ps_instance.h>
+#include <ppapi_simple/ps_interface.h>
 
 #include "naclmsg.h"
 
 NaclMsg* g_naclMsg;
 
-static void MessageHandler(const pp::Var& key,
-			   const pp::Var& value,
+static void MessageHandler(PP_Var key,
+			   PP_Var value,
 			   void* user_data) {
-  ((NaclMsg*)user_data)->HandleMessage(value);
+  ((NaclMsg*)user_data)->HandleMessage(pp::Var(value));
 }
 
 NaclMsg::NaclMsg()
@@ -21,7 +22,7 @@ NaclMsg::NaclMsg()
   , result_(pp::Var::Null()) {
   pthread_mutex_init(&lock_, NULL);
   pthread_cond_init(&cond_, NULL);
-  PSInstance::GetInstance()->RegisterMessageHandler("naclmsg", MessageHandler, this);
+  PSEventRegisterMessageHandler("naclmsg", MessageHandler, this);
 }
 
 NaclMsg::~NaclMsg() {
@@ -30,14 +31,14 @@ NaclMsg::~NaclMsg() {
 }
 
 void NaclMsg::PostMessage(const pp::Var& msg) {
-  PSInstance::GetInstance()->PostMessage(msg);
+  PSInterfaceMessaging()->PostMessage(PSGetInstanceId(), msg.pp_var());
 }
 
 pp::Var NaclMsg::SendMessage(pp::VarDictionary& msg) {
   int id = next_request_id_++;
   msg.Set("naclmsg_id", id);
   // fprintf(stderr, "naclmsg: send %d\n", id);
-  PSInstance::GetInstance()->PostMessage(msg);
+  PSInterfaceMessaging()->PostMessage(PSGetInstanceId(), msg.pp_var());
 
   pthread_mutex_lock(&lock_);
   while (result_id_ != id)

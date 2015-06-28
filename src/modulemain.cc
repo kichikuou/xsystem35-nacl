@@ -4,7 +4,6 @@
 
 #include <SDL/SDL_main.h>
 #include <nacl_io/nacl_io.h>
-#include <ppapi/cpp/input_event.h>
 #include <ppapi_simple/ps_instance.h>
 #include <ppapi_simple/ps_interface.h>
 #include <ppapi_simple/ps_main.h>
@@ -32,8 +31,9 @@ static void wait_didChangeView() {
     }
     PSEventRelease(ps_event);
   }
-  PSInstance::GetInstance()->ClearInputEventRequest(PP_INPUTEVENT_CLASS_WHEEL |
-													PP_INPUTEVENT_CLASS_TOUCH);
+  PSInterfaceInputEvent()->ClearInputEventRequest(
+      PSGetInstanceId(),
+      PP_INPUTEVENT_CLASS_WHEEL | PP_INPUTEVENT_CLASS_TOUCH);
 }
 
 static int nacl_main(int argc, char* argv[]) {

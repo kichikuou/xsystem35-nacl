@@ -12,7 +12,8 @@ extern "C" {
 #include <string.h>
 #include <pthread.h>
 #include <ppapi/cpp/audio.h>
-#include <ppapi_simple/ps_instance.h>
+#include <ppapi/cpp/instance.h>
+#include <ppapi_simple/ps.h>
 
 class NaclAudio {
 public:
@@ -43,18 +44,18 @@ int NaclAudio::open(audiodevice_t* audio, chanfmt_t fmt) {
   if (ppaudio_)
     close(audio);
 
-  pp::Instance* instance = PSInstance::GetInstance();
+  pp::Instance instance(PSGetInstanceId());
 
-  PP_AudioSampleRate sample_rate = pp::AudioConfig::RecommendSampleRate(instance);
+  PP_AudioSampleRate sample_rate = pp::AudioConfig::RecommendSampleRate(&instance);
   if (sample_rate != fmt.rate)
     return NG;
 
-  sample_frame_count_ = pp::AudioConfig::RecommendSampleFrameCount(instance, sample_rate, 4096);
+  sample_frame_count_ = pp::AudioConfig::RecommendSampleFrameCount(&instance, sample_rate, 4096);
   if (!sample_frame_count_)
     return NG;
 
-  ppaudio_ = new pp::Audio(instance,
-                           pp::AudioConfig(instance, sample_rate, sample_frame_count_),
+  ppaudio_ = new pp::Audio(&instance,
+                           pp::AudioConfig(&instance, sample_rate, sample_frame_count_),
                            AudioCallback,
                            this);
   audio->buf.len = sample_frame_count_ * 4;  // 16 bits, stereo

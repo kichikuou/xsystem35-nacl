@@ -7,7 +7,7 @@ FREETYPE_CONFIG := $(NACL_SDK_ROOT)/toolchain/$(shell $(NACL_SDK_ROOT)/tools/get
 FREETYPE_INC := $(shell $(FREETYPE_CONFIG) --cflags)
 
 TARGET = xsystem35
-LIBS = vorbisfile vorbis ogg SDL freetype png bz2 z ppapi_simple ppapi_gles2 ppapi_cpp ppapi nacl_io
+LIBS = vorbisfile vorbis ogg SDL freetype png bz2 z ppapi_simple_cpp ppapi_gles2 ppapi_cpp ppapi nacl_io
 
 CFLAGS = -I.. -I. $(FREETYPE_INC) -Wno-pointer-sign -Wno-invalid-source-encoding
 
