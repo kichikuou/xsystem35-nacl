@@ -405,11 +405,13 @@ static boolean sys35_initGameDataResorce() {
 	char s[256];
 	char s1[256], s2[256];
 	
-	if (NULL == (fp = fopen(gameResorceFile, "r"))) {
-		if(sys35_initGameDataDir(cnt)==TRUE) {
-			goto initdata;
+	if (NULL == (fp = fopen("gamedata/xsystem35.gr", "r"))) {
+		if (NULL == (fp = fopen(gameResorceFile, "r"))) {
+			if(sys35_initGameDataDir(cnt)==TRUE) {
+				goto initdata;
+			}
+			sys35_usage(TRUE);
 		}
-		sys35_usage(TRUE);
 	}
 	while(fgets(s, 255, fp) != NULL ) {
 		linecnt++;
