@@ -19,7 +19,7 @@
          NAME=sdl
          VERSION=1.2.15
         -URL=https://github.com/sbc100/SDL-mirror.git@b3ef807
-        +URL=https://github.com/kichikuou/SDL-mirror.git@2aee2dc
+        +URL=https://github.com/kichikuou/SDL-mirror.git@ba33b3c
          LICENSE=LGPL2
         -DEPENDS=(nacl-spawn regal)
         +DEPENDS=(nacl-spawn)

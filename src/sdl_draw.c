@@ -288,16 +288,23 @@ static SDL_Surface *com2alphasurface(agsurface_t *src, int cl) {
 	int x,y;
 	BYTE *sp, *dp;
 	SDL_Rect r_src;
+	Uint32 pixel;
 	
-	s = SDL_AllocSurface(SDL_SWSURFACE, src->width, src->height, 
-			     sdl_dib->format->BitsPerPixel <= 24 ? sdl_dib->format->BitsPerPixel+8:32,
-			     sdl_dib->format->Rmask,sdl_dib->format->Gmask,
-			     sdl_dib->format->Bmask,
-			     sdl_dib->format->BitsPerPixel<24?0xFF0000:0xFF000000);
+	if (sdl_dib->format->BitsPerPixel == 8) {
+		s = SDL_AllocSurface(SDL_SWSURFACE, src->width, src->height,
+							 32, 0xFF0000, 0xFF00, 0xFF, 0xFF000000);
+		pixel = sdl_col[cl].r << 16 | sdl_col[cl].g << 8 | sdl_col[cl].b;
+	} else {
+		s = SDL_AllocSurface(SDL_SWSURFACE, src->width, src->height,
+							 sdl_dib->format->BitsPerPixel <= 24 ? sdl_dib->format->BitsPerPixel+8:32,
+							 sdl_dib->format->Rmask,sdl_dib->format->Gmask,
+							 sdl_dib->format->Bmask,
+							 sdl_dib->format->BitsPerPixel<24?0xFF0000:0xFF000000);
+		pixel = SDL_MapRGB(sdl_dib->format, sdl_col[cl].r, sdl_col[cl].g, sdl_col[cl].b);
+	}
 	
 	setRect(r_src, 0, 0, src->width, src->height);
-	SDL_FillRect(s, &r_src,
-		     SDL_MapRGB(sdl_dib->format, sdl_col[cl].r, sdl_col[cl].g, sdl_col[cl].b));
+	SDL_FillRect(s, &r_src, pixel);
 
 	SDL_LockSurface(s);
 	
@@ -336,7 +343,7 @@ int sdl_drawString(int x, int y, char *msg, u_long col) {
 		if (glyph == NULL) return 0;
 		setRect(r_src, 0, 0, glyph->width, glyph->height);
 		setRect(r_dst, x, y, glyph->width, glyph->height);
-		if (sdl_font->antialiase_on && sdl_dib->format->BitsPerPixel != 8) {
+		if (sdl_font->antialiase_on) {
 			SDL_Surface *src = com2alphasurface(glyph, col);
 			
 			SDL_BlitSurface(src, &r_src, sdl_dib, &r_dst);

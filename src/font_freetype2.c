@@ -191,6 +191,7 @@ static void font_ttf_sel_font(int type, int size) {
 static void pixmap2comimg(BYTE *src, int x, int y, int w, int h, int src_bpl) {
 	int yy;
 	BYTE *dst = GETOFFSET_PIXEL(&img_glyph, x, y);
+	if (w <= 0) return;
 	
 	for (yy = 0; yy < h; yy++) {
 		memcpy(dst, src, w);
@@ -204,7 +205,7 @@ static void pixmapmono2comimg(BYTE *src, int x, int y, int w, int h, int src_bpl
 	int w1,w2;
 	BYTE *dst = GETOFFSET_PIXEL(&img_glyph, x, y);
 	unsigned int ch;
-        if (w <= 0) return;
+	if (w <= 0) return;
 	
 	w1 = w / 8;
 	w2 = w % 8;
@@ -281,7 +282,7 @@ static void *font_ttf_get_glyph(unsigned char *_msg) {
 				      x + slot->bitmap_left,
 				      max(0, fontset->size * 0.9 - slot->metrics.horiBearingY/64),
 				      slot->bitmap.width,
-                                      slot->bitmap.rows,
+				      slot->bitmap.rows,
 				      slot->bitmap.pitch);
 		} else if (pixelmode == ft_pixel_mode_mono) {
 			pixmapmono2comimg(slot->bitmap.buffer,
