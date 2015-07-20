@@ -42,6 +42,10 @@ extern mididevice_t midi_extplayer;
 extern mididevice_t midi_rawmidi;
 #endif
 
+#ifdef ENABLE_NACL
+extern mididevice_t midi_nacl;
+#endif
+
 int midi_init(mididevice_t *midi) {
 	int ret = NG;
 
@@ -57,6 +61,12 @@ int midi_init(mididevice_t *midi) {
 #ifdef ENABLE_MIDI_EXTPLAYER
 		ret = midi_extplayer.init(player, 0);
 		memcpy(midi, &midi_extplayer, sizeof(mididevice_t));
+#endif
+		break;
+	case 'n':
+#ifdef ENABLE_NACL
+		memcpy(midi, &midi_nacl, sizeof(mididevice_t));
+		ret = midi->init(NULL, 0);
 #endif
 		break;
 	case '0':
@@ -87,6 +97,10 @@ void midi_set_output_device(int mode) {
 	case 'r':
 		/* raw midi mode */
 		default_mode = 'r';
+		break;
+	case 'n':
+		/* nacl midi mode */
+		default_mode = 'n';
 		break;
 	case 's':
 		/* sequencer midi mode */

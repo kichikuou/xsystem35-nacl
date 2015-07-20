@@ -24,7 +24,7 @@ SRC_IMAGE = image.c
 
 SRC_AUDIO = audio_nacl.cc
 SRC_CDROM = cdrom.nacl.cc
-SRC_MIDI = 
+SRC_MIDI = midi.nacl.cc
 SRC_GRAPHDEV = sdl_video.c sdl_mode.c sdl_draw.c sdl_event.c sdl_image.c sdl_cursor.c
 SRC_FONT = font_freetype2.c cp932tojis0213.c
 SRC_ABLEND = 
