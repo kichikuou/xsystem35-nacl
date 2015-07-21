@@ -36,6 +36,7 @@
 #include "font.h"
 #include "joystick.h"
 #include "image.h"
+#include "naclmsg.h"
 
 static void window_init(void);
 static void makeDIB(int width, int height, int depth);
@@ -154,7 +155,7 @@ void sdl_Remove(void) {
 
 /* name is EUC */
 void sdl_setWindowTitle(char *name) {
-	SDL_WM_SetCaption(name, NULL);
+	naclmsg_setCaption(name);
 }
 
 /* Visual に応じて Window を生成する */

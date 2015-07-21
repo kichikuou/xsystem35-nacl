@@ -37,6 +37,7 @@ extern "C" {
 
 void naclmsg_exit(int code);
 void naclmsg_setWindowSize(int width, int height);
+void naclmsg_setCaption(char *name);
 
 #ifdef __cplusplus
 }
