@@ -197,7 +197,7 @@ void commandZT0() {
 		var = getCaliVariable();
 	}
 
-	lc = localtime(&time_now);
+	lc = naclmsg_localtime(&time_now);
 	*var       = 1900 + lc->tm_year;
 	*(var + 1) = 1    + lc->tm_mon;
 	*(var + 2) =        lc->tm_mday;

@@ -33,6 +33,7 @@
 #include "dri.h"
 #include "savedata.h"
 #include "cg.h"
+#include "naclmsg.h"
 
 void commandLD() {
 	/* 変数領域などのデータをロードする。（全ロード）*/
@@ -92,7 +93,7 @@ void commandLT() {
 		*(var + 5) = 0;
 		sysVar[0] = 255;
 	} else {
-		lc = localtime(&buf.st_mtime);
+		lc = naclmsg_localtime(&buf.st_mtime);
 		*var       = 1900 + lc->tm_year;
 		*(var + 1) = 1    + lc->tm_mon;
 		*(var + 2) =        lc->tm_mday;

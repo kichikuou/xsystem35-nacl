@@ -105,3 +105,27 @@ void naclmsg_setCaption(char *name) {
 	msg.Set("caption", buf);
 	g_naclMsg->PostMessage(msg);
 }
+
+struct tm *naclmsg_localtime(const time_t *timep) {
+	if (!timep)
+		return NULL;
+
+	pp::VarDictionary msg;
+	msg.Set("command", "localtime");
+	msg.Set("time", pp::Var(static_cast<double>(*timep)));
+
+	pp::Var result = g_naclMsg->SendMessage(msg);
+	if (!result.is_array())
+		return NULL;
+	pp::VarArray array(result);
+	static struct tm ltime;
+	ltime.tm_sec = array.Get(0).AsInt();
+	ltime.tm_min = array.Get(1).AsInt();
+	ltime.tm_hour = array.Get(2).AsInt();
+	ltime.tm_mday = array.Get(3).AsInt();
+	ltime.tm_mon = array.Get(4).AsInt();
+	ltime.tm_year = array.Get(5).AsInt();
+	ltime.tm_wday = array.Get(6).AsInt();
+
+	return &ltime;
+}

@@ -3,6 +3,7 @@
 
 #ifdef __cplusplus
 
+#include <time.h>
 #include <pthread.h>
 #include <ppapi/cpp/var.h>
 #include <ppapi_simple/ps_instance.h>
@@ -38,6 +39,7 @@ extern "C" {
 void naclmsg_exit(int code);
 void naclmsg_setWindowSize(int width, int height);
 void naclmsg_setCaption(char *name);
+struct tm *naclmsg_localtime(const time_t *timep);
 
 #ifdef __cplusplus
 }
