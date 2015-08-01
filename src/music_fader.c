@@ -328,9 +328,10 @@ static void fade_calc_time(fadeobj_t *obj) {
         
 int musfade_cb() {
 	fadeobj_t *obj;
-	GList *node;
+	GList *node, *next;
 	
-	for (node = prv.fadelist; node; node = g_list_next(node)) {
+	for (node = prv.fadelist; node; node = next) {
+		next = g_list_next(node);
 		obj = (fadeobj_t *)node->data;
 		if (obj == NULL) continue;
 		
