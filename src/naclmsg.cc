@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <ppapi/cpp/var.h>
 #include <ppapi/cpp/var_array_buffer.h>
