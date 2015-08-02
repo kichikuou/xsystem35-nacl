@@ -22,6 +22,7 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <limits.h>
 #include <SDL/SDL.h>
@@ -34,6 +35,8 @@
 
 static SDL_Rect **modes;
 
+// An internal function of SDL nacl port
+void NACL_SetScreenResolution(int width, int height);
 
 void sdl_vm_init(void) {
 	modes = SDL_ListModes(NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
@@ -108,7 +111,14 @@ void sdl_setWindowSize(int x, int y, int w, int h) {
 	view_y = y;
 	
 	if (w == view_w && h == view_h) return;
-	
+
+	if (w > view_w || h > view_h) {
+		// Hack: SDL_SetVideoMode fails if given size is larger than screen size.
+		// Set (w, h+1) as screen size here so that DIDCHANGEVIEW event will
+		// reset it with correct scaling information.
+		NACL_SetScreenResolution(w, h + 1);
+	}
+
 	view_w = w;
 	view_h = h;
 	
@@ -128,6 +138,7 @@ void sdl_setWindowSize(int x, int y, int w, int h) {
 	}
 	
 	sdl_display = SDL_SetVideoMode(w, h, sdl_vinfo->vfmt->BitsPerPixel, mode);
+	assert(sdl_display);
 	ms_active = (SDL_GetAppState() & SDL_APPMOUSEFOCUS) ? TRUE : FALSE;
 	naclmsg_setWindowSize(w, h);
 }

@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <ppapi/cpp/instance.h>
 #include <ppapi/cpp/var_array_buffer.h>
 #include <ppapi/cpp/var_dictionary.h>

@@ -266,10 +266,10 @@ void sdl_setWorldSize(int width, int height, int depth) {
 	SDL_FillRect(sdl_dib, NULL, 0);
 }
 
-/* Windowの size と depth の取得 */
+/* Displayの size と depth の取得 */
 void sdl_getWindowInfo(DispInfo *info) {
-	info->width  = sdl_display->w;
-	info->height = sdl_display->h;
+	info->width  = 1024;
+	info->height = 768;
 	info->depth  = sdl_display->format->BitsPerPixel;
 }
 
