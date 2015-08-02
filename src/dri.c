@@ -202,8 +202,20 @@ drifiles *dri_init(char **file, int cnt, boolean mmapping) {
 		filesize = getfilesize(fp);
 		/* copy filenme */
 		d->fnames[i] = strdup(*(file + i));
+#ifdef ENABLE_NACL
+		/* In NaCl, mmap does not work for files larger than 32MB (a bug of nacl_io?) */
+		if (mmapping) {
+			d->mmapadr[i] = malloc(filesize);
+			fseek(fp, 0L, SEEK_SET);
+			if (fread(d->mmapadr[i], filesize, 1, fp) == 1)
+				d->mmapped = TRUE;
+			else
+				WARNING("fread failed\n");
+		}
+#endif
 		/* close */
 		fclose(fp);
+#ifndef ENABLE_NACL
 		/* mmap */
 		if (mmapping) {
 			int fd;
@@ -219,6 +231,7 @@ drifiles *dri_init(char **file, int cnt, boolean mmapping) {
 			}
 			d->mmapped = TRUE;
 		}
+#endif
 	}
 	return d;
 }
