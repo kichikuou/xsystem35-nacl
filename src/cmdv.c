@@ -25,14 +25,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <signal.h>
-#include <sys/time.h>
+#include <pthread.h>
 #include "portab.h"
 #include "xsystem35.h"
 #include "ags.h"
 #include "imput.h"
-
-extern void sys_set_signalhandler(int SIG, void (*handler)(int));
 
 typedef struct {
 	int x0Unit;
@@ -108,6 +105,8 @@ static UnitMapSrcImg *srcimg;
 #define VACMD_MAX 20                      /* Panyoで18まで */
 static  VaParam VAcmd[VACMD_MAX];         
 static  boolean inAnimation      = FALSE; /* 画面更新中 */
+static pthread_t animationThread;
+static pthread_mutex_t animationLock = PTHREAD_MUTEX_INITIALIZER;
 
 /* UnitMap 各種マクロ */
 #define MAPSIZE_PER_ATTRIB (cxMap * cyMap)
@@ -136,7 +135,7 @@ static void    va_interval_process();
 static void    va_init_itimer();
 static void    va_pause_itimer();
 static void    va_unpause_itimer();
-static void    alarmHandler();
+static void *animationThreadMain(void *arg);
 
 void commandVC() { /* from Rance4 */
 	nPageNum = getCaliValue();
@@ -719,7 +718,6 @@ void commandVJ() {
 }
 
 void commandVA() { /* from Panyo */
-	static boolean startedItimer = FALSE;
 	int no = sys_getc();
 	int p1 = getCaliValue();
 	int p2, p3;
@@ -740,6 +738,8 @@ void commandVA() { /* from Panyo */
 		return;
 	}
 	
+	pthread_mutex_lock(&animationLock);
+
 	p1--;
 	switch(no) {
 	case 0:
@@ -775,12 +775,7 @@ void commandVA() { /* from Panyo */
 				}
 			}
 			/* animation start */
-			if (startedItimer) {
-				va_unpause_itimer();
-			} else {
-				startedItimer = TRUE;
-				va_init_itimer();
-			}
+			va_init_itimer();
 	
 			VAcmd[p1].state   = VA_RUNNING;
 			VAcmd[p1].draw    = TRUE;
@@ -791,7 +786,9 @@ void commandVA() { /* from Panyo */
 				/* キー抜け無し ,p3=0は指定不可 */
 				while(VAcmd[p1].state == VA_RUNNING) {
 					va_animationAlone(p1);
+					pthread_mutex_unlock(&animationLock);
 					usleep(10*1000);
+					pthread_mutex_lock(&animationLock);
 				}
 				va_drawUnit(p1);
 				va_updateUnit(p1);
@@ -801,13 +798,14 @@ void commandVA() { /* from Panyo */
 				VAcmd[p1].rewrite = TRUE;
 				while(VAcmd[p1].state == VA_RUNNING) {
 					va_animationAlone(p1);
+					pthread_mutex_unlock(&animationLock);
 					usleep(10*1000);
 					key = sys_getInputInfo();
+					pthread_mutex_lock(&animationLock);
 					if (key != 0) {
 						sysVar[0] = key;
 						break;
 					}
-					
 				}
 				va_drawUnit(p1);
 				va_updateUnit(p1);
@@ -855,6 +853,7 @@ void commandVA() { /* from Panyo */
 	default:
 		WARNING("Unknown VA command %d\n", no);
 	}
+	pthread_mutex_unlock(&animationLock);
 }
 	
 static boolean vh_checkImmovableArea(int page, int x, int y, int w, int h) {
@@ -960,6 +959,7 @@ void va_animation() {
 	int i;
 	int x, y, w, h;
 	
+	pthread_mutex_lock(&animationLock);
 	inAnimation = TRUE;
 	
 	for (i = 0; i < VACMD_MAX; i++) {
@@ -977,6 +977,7 @@ void va_animation() {
 	}
 	
 	inAnimation = FALSE;
+	pthread_mutex_unlock(&animationLock);
 }
 	
 static void va_animationAlone(int i) {
@@ -1031,46 +1032,32 @@ static void va_interval_process() {
 		}
 	}
 	/* 更新するものが無い場合は、タイマーを止めて、アニメーションストップ */
-	if (!proceeding) {
+	if (!proceeding)
 		va_pause_itimer();
-		nact->is_va_animation = FALSE;
-	}
 }
 
-static void alarmHandler() {
-	if (!inAnimation) {
-		va_interval_process();
+static void *animationThreadMain(void *arg) {
+	for (;;) {
+		pthread_mutex_lock(&animationLock);
+
+		if (nact->is_va_animation && !inAnimation)
+			va_interval_process();
+
+		pthread_mutex_unlock(&animationLock);
+		usleep(10 * 1000);
 	}
 }
 
 static void va_init_itimer() {
-	sys_set_signalhandler(SIGALRM, alarmHandler);
 	va_unpause_itimer();
+	if (!animationThread)
+		pthread_create(&animationThread, NULL, animationThreadMain, NULL);
 }
 
 static void va_pause_itimer() {
-	WARNING("Timer is not supported\n");
-#if 0 // FIXME
-	struct itimerval value;
-
-	value.it_interval.tv_sec  = 0;
-	value.it_interval.tv_usec = 0;
-	value.it_value.tv_sec  = 0;
-	value.it_value.tv_usec = 0;
-	setitimer(ITIMER_REAL, &value, NULL);
-#endif
+	nact->is_va_animation = FALSE;
 }
 
 static void va_unpause_itimer() {
-	WARNING("Timer is not supported\n");
-#if 0 // FIXME
-	struct itimerval value;
-	
-	value.it_interval.tv_sec  = 0;
-	value.it_interval.tv_usec = 10 * 1000;
-	value.it_value.tv_sec  = 0;
-	value.it_value.tv_usec = 10 * 1000;
-	setitimer(ITIMER_REAL, &value, NULL);
 	nact->is_va_animation = TRUE;
-#endif
 }
