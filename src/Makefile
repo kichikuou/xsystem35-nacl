@@ -29,7 +29,7 @@ SRC_GRAPHDEV = sdl_video.c sdl_mode.c sdl_draw.c sdl_event.c sdl_image.c sdl_cur
 SRC_FONT = font_freetype2.c cp932tojis0213.c
 SRC_ABLEND = 
 #SRC_MENU := menu.c menu_callback.c menu_gui.c
-SRC_MENU := menu_null.c
+SRC_MENU := menu_nacl.cc
 
 SOURCES = modulemain.cc \
 	naclmsg.cc \
