@@ -283,16 +283,17 @@ static SDL_Surface *com2surface(agsurface_t *src) {
 	return s;
 }
 
-static SDL_Surface *com2alphasurface(agsurface_t *src, int cl) {
+static SDL_Surface *com2alphasurface(agsurface_t *src, int cl, SDL_Surface **opaque) {
 	SDL_Surface *s;
 	int x,y;
-	BYTE *sp, *dp;
+	BYTE *sp, *dp, *op = NULL;
 	SDL_Rect r_src;
 	Uint32 pixel;
 	
 	if (sdl_dib->format->BitsPerPixel == 8) {
 		s = SDL_AllocSurface(SDL_SWSURFACE, src->width, src->height,
 							 32, 0xFF0000, 0xFF00, 0xFF, 0xFF000000);
+		*opaque = SDL_AllocSurface(SDL_SWSURFACE, src->width, src->height, 8, 0, 0, 0, 0);
 		pixel = sdl_col[cl].r << 16 | sdl_col[cl].g << 8 | sdl_col[cl].b;
 	} else {
 		s = SDL_AllocSurface(SDL_SWSURFACE, src->width, src->height,
@@ -307,6 +308,8 @@ static SDL_Surface *com2alphasurface(agsurface_t *src, int cl) {
 	SDL_FillRect(s, &r_src, pixel);
 
 	SDL_LockSurface(s);
+	if (*opaque)
+		SDL_LockSurface(*opaque);
 	
 	for (y = 0; y < src->height; y++) {
 		sp = src->pixel + y * src->bytes_per_line;
@@ -314,14 +317,20 @@ static SDL_Surface *com2alphasurface(agsurface_t *src, int cl) {
 #ifndef WORDS_BIGENDIAN
 		dp += s->format->BytesPerPixel -1;
 #endif
+		if (*opaque)
+			op = (*opaque)->pixels + y * (*opaque)->pitch;
 		
 		for (x = 0; x < src->width; x++) {
 			*dp =  R_ALPHA(*sp);
+			if (op)
+				*op++ = (*dp >= (256-64)) ? cl : 0;
 			sp++;
 			dp += s->format->BytesPerPixel;
 		}
 	}
 	
+	if (*opaque)
+		SDL_UnlockSurface(*opaque);
 	SDL_UnlockSurface(s);
 	return s;
 }
@@ -344,9 +353,19 @@ int sdl_drawString(int x, int y, char *msg, u_long col) {
 		setRect(r_src, 0, 0, glyph->width, glyph->height);
 		setRect(r_dst, x, y, glyph->width, glyph->height);
 		if (sdl_font->antialiase_on) {
-			SDL_Surface *src = com2alphasurface(glyph, col);
+			SDL_Surface *opaque = NULL;
+			SDL_Surface *src = com2alphasurface(glyph, col, &opaque);
 			
 			SDL_BlitSurface(src, &r_src, sdl_dib, &r_dst);
+			if (opaque) {
+				for (int i = 1; i < 256; i++) {
+					memcpy(opaque->format->palette->colors + i, &sdl_col[col],
+						   sizeof(SDL_Color));
+				}
+				SDL_SetColorKey(opaque, SDL_SRCCOLORKEY, 0);
+				SDL_BlitSurface(opaque, &r_src, sdl_dib, &r_dst);
+				SDL_FreeSurface(opaque);
+			}
 			SDL_FreeSurface(src);
 		} else {
 			int i;
