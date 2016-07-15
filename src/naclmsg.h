@@ -57,6 +57,7 @@ extern NaclMsg* g_naclMsg;
 extern "C" {
 #endif // __cplusplus
 
+void naclmsg_ready();
 void naclmsg_exit(int code);
 void naclmsg_setWindowSize(int width, int height);
 void naclmsg_setCaption(char *name);

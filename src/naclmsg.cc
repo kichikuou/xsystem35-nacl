@@ -90,6 +90,14 @@ void NaclMsg::HandleMessage(const pp::Var& msg) {
 	pthread_cond_signal(&cond_);
 }
 
+void naclmsg_ready() {
+	if (!g_naclMsg)
+		return;
+	pp::VarDictionary msg;
+	msg.Set("command", "ready");
+	g_naclMsg->PostMessage(msg);
+}
+
 void naclmsg_exit(int code) {
 	if (!g_naclMsg)
 		return;

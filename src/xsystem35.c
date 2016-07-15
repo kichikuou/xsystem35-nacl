@@ -65,6 +65,7 @@ extern char *mkdtemp (char *template);
 #include "filecheck.h"
 #include "joystick.h"
 #include "s39init.h"
+#include "naclmsg.h"
 
 #ifdef ENABLE_MMX
 #include "haveunit.h"
@@ -899,6 +900,8 @@ int main(int argc, char **argv) {
 	menu_init();
 #endif
 	
+	naclmsg_ready();
+
 	nact_main();
 	sys35_remove();
 	
