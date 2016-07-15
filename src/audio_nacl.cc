@@ -34,7 +34,9 @@ extern "C" {
 #include <pthread.h>
 #include <ppapi/cpp/audio.h>
 #include <ppapi/cpp/instance.h>
+#include <ppapi/cpp/var.h>
 #include <ppapi_simple/ps.h>
+#include <ppapi_simple/ps_event.h>
 
 class NaclAudio {
 public:
@@ -46,20 +48,32 @@ public:
   bool writable() const { return !full_; }
   bool playing() const { return playing_; }
   void callback(void* samples, uint32_t buffer_size);
+  void setVolume(int vol) { volume_ = vol; }
 
 private:
   uint32_t sample_frame_count_;
   pp::Audio* ppaudio_;
   void* buf_;
+  int volume_;  // 0-256
   pthread_cond_t *cond_;
   bool full_;
   bool playing_;
   int zero_count_;
 };
 
+namespace {
+
+void SetVolumeHandler(PP_Var key, PP_Var value, void* user_data) {
+  const pp::Var v(value);
+  assert(v.is_int());
+  static_cast<NaclAudio*>(user_data)->setVolume(v.AsInt());
+}
+
 void AudioCallback(void* samples, uint32_t buffer_size, void* data) {
   static_cast<NaclAudio*>(data)->callback(samples, buffer_size);
 }
+
+} // unnamed namespace
 
 int NaclAudio::open(audiodevice_t* audio, chanfmt_t fmt) {
   if (ppaudio_)
@@ -81,10 +95,14 @@ int NaclAudio::open(audiodevice_t* audio, chanfmt_t fmt) {
                            this);
   audio->buf.len = sample_frame_count_ * 4;  // 16 bits, stereo
   buf_ = malloc(audio->buf.len);
+  volume_ = 256;
   full_ = false;
   playing_ = false;
   zero_count_ = 0;
   cond_ = audio->pcm_cond;
+
+  PSEventRegisterMessageHandler("setvolume", SetVolumeHandler, this);
+
   return OK;
 }
 
@@ -128,7 +146,13 @@ int NaclAudio::write(audiodevice_t* audio, unsigned char* buf, int cnt) {
 
 void NaclAudio::callback(void* samples, uint32_t buffer_size) {
   assert(buffer_size >= sample_frame_count_ * 4);
-  memcpy(samples, buf_, sample_frame_count_ * 4);
+  int16_t* src = static_cast<int16_t*>(buf_);
+  int16_t* dest = static_cast<int16_t*>(samples);
+  int v = volume_;
+  for (uint32_t i = sample_frame_count_; i > 0; i--) {
+    *dest++ = *src++ * v >> 8;
+    *dest++ = *src++ * v >> 8;
+  }
   full_ = false;
   pthread_cond_signal(cond_);
 }
